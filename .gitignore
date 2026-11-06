@@ -14,3 +14,6 @@ data/*
 dist/
 templates/thiep-01/reference/
 *.tsbuildinfo
+
+# Spring build output
+**/target/

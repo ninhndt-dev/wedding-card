@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "site": {
+    "slug": "tan-ninh-hoang-ngoc",
+    "guestName": "Quý khách",
+    "autoPlay": true,
+    "desktop": false
+  },
+  "opening": {
+    "enabled": true,
+    "title": "Trân trọng kính mời",
+    "invite": "Quý khách",
+    "button": "Mở thiệp",
+    "background": "#faf8f1",
+    "images": {
+      "envelope": "/thiep-01/phongbi.png",
+      "seal": "/thiep-01/nutthiep.png",
+      "flowerLeft": "/thiep-01/hoabentrai.png",
+      "flowerRight": "/thiep-01/hoa.png",
+      "chain": "/thiep-01/daybenduoi.png",
+      "buttonImage": "/thiep-01/nutclickmothiep.png"
+    }
+  },
+  "settings": {
+    "bride": "Hoàng Ngọc",
+    "groom": "Tấn Ninh",
+    "date": "2026-11-28T12:30",
+    "venue": "TƯ GIA NHÀ TRAI",
+    "address": "TDP Đông Hồ, P. Thuận Thành, TP. Bắc Ninh",
+    "story": "They create a soul strong\nenough to last forever!",
+    "photo": ""
+  },
+  "nodes": {},
+  "forms": {
+    "rsvp": {
+      "title": "Xác Nhận Tham Dự",
+      "subtitle": "Việc xác nhận giúp chúng mình chuẩn bị chu đáo hơn. Cảm ơn bạn!",
+      "button": "Xác nhận",
+      "namePlaceholder": "Họ và tên *",
+      "messagePlaceholder": "Lời nhắn cho Cô Dâu & Chú Rể",
+      "events": [
+        "Lễ nhà trai",
+        "Lễ nhà gái",
+        "Tiệc cưới"
+      ]
+    },
+    "wishes": {
+      "title": "Sổ lưu bút",
+      "subtitle": "Cảm ơn bạn rất nhiều vì đã gửi những lời chúc mừng tốt đẹp nhất đến đám cưới của chúng tôi!",
+      "button": "Gửi lời chúc",
+      "namePlaceholder": "Nhập tên của bạn*",
+      "messagePlaceholder": "Nhập lời chúc của bạn*"
+    }
+  },
+  "additions": [],
+  "album": [
+    {
+      "src": "/uploads/6aec96556e9b32d8dd887793/1793893332630-HIU_7223.webp",
+      "caption": "Ảnh cưới 1"
+    },
+    {
+      "src": "/uploads/6aec96556e9b32d8dd887793/1793893379196-HIU_7268.webp",
+      "caption": "Ảnh cưới 2"
+    },
+    {
+      "src": "/uploads/6aec96556e9b32d8dd887793/1793893468329-HIU_7365.webp",
+      "caption": "Ảnh cưới 3"
+    },
+    {
+      "src": "/uploads/6aec96556e9b32d8dd887793/1793893468542-HIU_7420.webp",
+      "caption": "Ảnh cưới 4"
+    },
+    {
+      "src": "/uploads/6aec96556e9b32d8dd887793/1793893467324-HIU_7828.webp",
+      "caption": "Ảnh cưới 5"
+    },
+    {
+      "src": "/uploads/6aec96556e9b32d8dd887793/1793893467161-HIU_7755.webp",
+      "caption": "Ảnh cưới 6"
+    },
+    {
+      "src": "/uploads/6aec96556e9b32d8dd887793/1793893554016-HIU_7925.webp",
+      "caption": "Ảnh cưới 7"
+    },
+    {
+      "src": "/uploads/6aec96556e9b32d8dd887793/1793893553670-HIU_8075.webp",
+      "caption": "Ảnh cưới 8"
+    }
+  ],
+  "events": {
+    "groom": {
+      "date": "2026-11-28T12:30",
+      "venue": "TƯ GIA NHÀ TRAI",
+      "address": "TDP Đông Hồ, P. Thuận Thành, TP. Bắc Ninh",
+      "mapUrl": "",
+      "lunar": "(Tức ngày 20 tháng 10 năm Bính Ngọ)"
+    },
+    "bride": {
+      "date": "2026-11-28T06:30",
+      "venue": "TƯ GIA NHÀ GÁI",
+      "address": "Thôn Tiên Hoà 1, Xã Tống Sơn, Tỉnh Thanh Hoá",
+      "mapUrl": "",
+      "lunar": "(Tức ngày 20 tháng 10 năm Bính Ngọ)"
+    }
+  },
+  "music": {
+    "src": "/audio/ngay_xuan_vui_cuoi_(giao_huong_tan_thoi).m4a",
+    "enabled": true
+  },
+  "gifts": {
+    "groom": {
+      "enabled": true,
+      "qr": "",
+      "bank": "",
+      "account": "",
+      "holder": ""
+    },
+    "bride": {
+      "enabled": true,
+      "qr": "",
+      "bank": "",
+      "account": "",
+      "holder": ""
+    }
+  },
+  "theme": {
+    "primary": "#4e6437",
+    "background": "#ffffff",
+    "fontFamily": "Original",
+    "fontUrl": "",
+    "canvasHeight": 11313,
+    "backgroundImage": "",
+    "effects": true,
+    "effectSymbols": "♥️ ❅"
+  }
+}

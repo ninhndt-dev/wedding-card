@@ -1,0 +1,520 @@
+{
+  "DEFAULT_SITE": {
+    "slug": "tan-ninh-hoang-ngoc",
+    "guestName": "Quý khách",
+    "autoPlay": true,
+    "desktop": false
+  },
+  "PALETTES": [
+    {
+      "id": "olive",
+      "name": "Olive thanh lịch",
+      "primary": "#4e6437",
+      "background": "#faf8f1"
+    },
+    {
+      "id": "burgundy",
+      "name": "Đỏ đô lãng mạn",
+      "primary": "#792b3a",
+      "background": "#fff6ee"
+    },
+    {
+      "id": "sand",
+      "name": "Be tối giản",
+      "primary": "#87674b",
+      "background": "#f8f1e7"
+    },
+    {
+      "id": "blue",
+      "name": "Xanh cổ điển",
+      "primary": "#365a72",
+      "background": "#f1f7fa"
+    }
+  ],
+  "STOCK": [
+    {
+      "name": "Hoa trắng",
+      "src": "/thiep-01/decor-flower1.png"
+    },
+    {
+      "name": "Hoa góc",
+      "src": "/thiep-01/decor-flower4.png"
+    },
+    {
+      "name": "Nhành hoa",
+      "src": "/thiep-01/decor-flower3.png"
+    },
+    {
+      "name": "Hoa nhỏ",
+      "src": "/thiep-01/decor-flower02.png"
+    },
+    {
+      "name": "Nền xanh",
+      "src": "/thiep-01/background.jpg"
+    },
+    {
+      "name": "Nét chữ",
+      "src": "/thiep-01/signature-bg.png"
+    },
+    {
+      "name": "Phong bì",
+      "src": "/thiep-01/phongbi.png"
+    },
+    {
+      "name": "Con dấu",
+      "src": "/thiep-01/nutthiep.png"
+    }
+  ],
+  "WIDGET_CATALOG": [
+    {
+      "id": "text",
+      "label": "Văn bản",
+      "type": "text",
+      "group": "Cơ bản",
+      "icon": "T",
+      "text": "Nội dung mới",
+      "props": {},
+      "style": {}
+    },
+    {
+      "id": "h1",
+      "label": "Tiêu đề H1",
+      "type": "text",
+      "group": "Cơ bản",
+      "icon": "H₁",
+      "text": "Tiêu đề chính",
+      "props": {
+        "heading": "h1"
+      },
+      "style": {
+        "fontSize": "54px",
+        "fontWeight": "600",
+        "height": "100px"
+      }
+    },
+    {
+      "id": "h2",
+      "label": "Tiêu đề H2",
+      "type": "text",
+      "group": "Cơ bản",
+      "icon": "H₂",
+      "text": "Tiêu đề",
+      "props": {
+        "heading": "h2"
+      },
+      "style": {
+        "fontSize": "42px",
+        "height": "90px"
+      }
+    },
+    {
+      "id": "h3",
+      "label": "Tiêu đề H3",
+      "type": "text",
+      "group": "Cơ bản",
+      "icon": "H₃",
+      "text": "Tiêu đề nhỏ",
+      "props": {
+        "heading": "h3"
+      },
+      "style": {
+        "fontSize": "34px"
+      }
+    },
+    {
+      "id": "paragraph",
+      "label": "Đoạn văn",
+      "type": "text",
+      "group": "Cơ bản",
+      "icon": "¶",
+      "text": "Viết câu chuyện của hai bạn tại đây.\nMột hành trình thật đẹp bắt đầu từ hôm nay.",
+      "props": {},
+      "style": {
+        "fontSize": "22px",
+        "height": "150px"
+      }
+    },
+    {
+      "id": "image",
+      "label": "Hình ảnh",
+      "type": "image",
+      "group": "Cơ bản",
+      "icon": "▧",
+      "text": "",
+      "props": {},
+      "style": {}
+    },
+    {
+      "id": "album",
+      "label": "Album",
+      "type": "album",
+      "group": "Cơ bản",
+      "icon": "▦",
+      "text": "Khoảnh khắc của chúng mình",
+      "props": {
+        "images": [
+          "/thiep-01/1793892037600-HIU_7932.webp",
+          "/thiep-01/1793892103340-HIU_8056.webp"
+        ]
+      },
+      "style": {
+        "width": "480px",
+        "height": "380px"
+      }
+    },
+    {
+      "id": "video",
+      "label": "Video",
+      "type": "video",
+      "group": "Cơ bản",
+      "icon": "▷",
+      "text": "Video của chúng mình",
+      "props": {
+        "poster": "",
+        "autoplay": false
+      },
+      "style": {
+        "width": "480px",
+        "height": "290px"
+      }
+    },
+    {
+      "id": "icon",
+      "label": "Biểu tượng",
+      "type": "icon",
+      "group": "Cơ bản",
+      "icon": "♡",
+      "text": "♡",
+      "props": {},
+      "style": {
+        "width": "100px",
+        "height": "100px",
+        "fontSize": "70px"
+      }
+    },
+    {
+      "id": "shape",
+      "label": "Hình dạng",
+      "type": "shape",
+      "group": "Cơ bản",
+      "icon": "◇",
+      "text": "",
+      "props": {},
+      "style": {
+        "backgroundColor": "#e1e7d8",
+        "borderRadius": "18px"
+      }
+    },
+    {
+      "id": "social",
+      "label": "Mạng xã hội",
+      "type": "social",
+      "group": "Cơ bản",
+      "icon": "⌘",
+      "text": "Kết nối với chúng mình",
+      "props": {
+        "links": [
+          {
+            "label": "Facebook",
+            "url": "https://www.facebook.com/"
+          },
+          {
+            "label": "Instagram",
+            "url": "https://www.instagram.com/"
+          }
+        ]
+      },
+      "style": {
+        "width": "450px",
+        "height": "150px"
+      }
+    },
+    {
+      "id": "button",
+      "label": "Nút ấn",
+      "type": "button",
+      "group": "Tương tác",
+      "icon": "▣",
+      "text": "Nút mới",
+      "props": {},
+      "style": {}
+    },
+    {
+      "id": "collapse",
+      "label": "Thu gọn / Xem thêm",
+      "type": "collapse",
+      "group": "Tương tác",
+      "icon": "▤",
+      "text": "Xem thêm",
+      "props": {
+        "body": "Nội dung mở rộng của chúng mình."
+      },
+      "style": {
+        "height": "180px"
+      }
+    },
+    {
+      "id": "directions",
+      "label": "Chỉ đường",
+      "type": "directions",
+      "group": "Tương tác",
+      "icon": "⌖",
+      "text": "Chỉ đường",
+      "props": {
+        "address": "TDP Đông Hồ, P. Thuận Thành, TP. Bắc Ninh"
+      },
+      "style": {}
+    },
+    {
+      "id": "map",
+      "label": "Bản đồ",
+      "type": "map",
+      "group": "Tương tác",
+      "icon": "⊕",
+      "text": "Địa điểm tổ chức",
+      "props": {
+        "address": "TDP Đông Hồ, P. Thuận Thành, TP. Bắc Ninh"
+      },
+      "style": {
+        "width": "480px",
+        "height": "350px"
+      }
+    },
+    {
+      "id": "calendar",
+      "label": "Lịch",
+      "type": "calendar",
+      "group": "Tương tác",
+      "icon": "▦",
+      "text": "Ngày chung đôi",
+      "props": {
+        "date": "2026-11-28T12:30"
+      },
+      "style": {
+        "width": "420px",
+        "height": "330px"
+      }
+    },
+    {
+      "id": "call",
+      "label": "Nút gọi",
+      "type": "call",
+      "group": "Tương tác",
+      "icon": "☎",
+      "text": "Gọi cho chúng mình",
+      "props": {
+        "phone": ""
+      },
+      "style": {}
+    },
+    {
+      "id": "chat",
+      "label": "Chat ngay",
+      "type": "chat",
+      "group": "Tương tác",
+      "icon": "▱",
+      "text": "Nhắn tin cho chúng mình",
+      "props": {
+        "url": "https://zalo.me/"
+      },
+      "style": {}
+    },
+    {
+      "id": "countdown",
+      "label": "Đếm ngược",
+      "type": "countdown",
+      "group": "Tương tác",
+      "icon": "◷",
+      "text": "Cùng đếm ngược",
+      "props": {
+        "date": "2026-11-28T12:30"
+      },
+      "style": {
+        "width": "480px",
+        "height": "150px"
+      }
+    },
+    {
+      "id": "wishes",
+      "label": "Sổ lưu bút",
+      "type": "wishes",
+      "group": "Nâng cao",
+      "icon": "▤",
+      "text": "Lời chúc yêu thương",
+      "props": {},
+      "style": {
+        "width": "480px",
+        "height": "520px"
+      }
+    },
+    {
+      "id": "rsvp",
+      "label": "Xác nhận tham dự",
+      "type": "rsvp",
+      "group": "Nâng cao",
+      "icon": "✓",
+      "text": "Bạn sẽ đến chứ?",
+      "props": {},
+      "style": {
+        "width": "480px",
+        "height": "700px"
+      }
+    },
+    {
+      "id": "guest",
+      "label": "Tên khách mời",
+      "type": "guest",
+      "group": "Nâng cao",
+      "icon": "♙",
+      "text": "Quý khách",
+      "props": {},
+      "style": {
+        "width": "450px",
+        "height": "70px"
+      }
+    },
+    {
+      "id": "registration",
+      "label": "Form đăng ký",
+      "type": "registration",
+      "group": "Nâng cao",
+      "icon": "☑",
+      "text": "Đăng ký tham gia",
+      "props": {
+        "button": "Gửi đăng ký",
+        "description": "Để lại thông tin để chúng mình liên hệ."
+      },
+      "style": {
+        "width": "480px",
+        "height": "440px"
+      }
+    },
+    {
+      "id": "order",
+      "label": "Form đặt hàng",
+      "type": "order",
+      "group": "Nâng cao",
+      "icon": "♧",
+      "text": "Gửi yêu cầu đặt hàng",
+      "props": {
+        "product": "Sản phẩm / dịch vụ",
+        "unitPrice": 0,
+        "button": "Gửi yêu cầu",
+        "description": "Chúng mình sẽ liên hệ xác nhận với bạn."
+      },
+      "style": {
+        "width": "480px",
+        "height": "560px"
+      }
+    },
+    {
+      "id": "login",
+      "label": "Form đăng nhập",
+      "type": "login",
+      "group": "Nâng cao",
+      "icon": "♙",
+      "text": "Đăng nhập quản trị",
+      "props": {
+        "button": "Đăng nhập"
+      },
+      "style": {
+        "width": "450px",
+        "height": "300px"
+      }
+    },
+    {
+      "id": "gift",
+      "label": "Quà mừng cưới",
+      "type": "gift",
+      "group": "Nâng cao",
+      "icon": "♔",
+      "text": "Quà mừng cưới",
+      "props": {
+        "side": "groom"
+      },
+      "style": {}
+    },
+    {
+      "id": "timeline",
+      "label": "Lịch trình",
+      "type": "timeline",
+      "group": "Nâng cao",
+      "icon": "☷",
+      "text": "Lịch trình ngày cưới",
+      "props": {
+        "items": [
+          {
+            "time": "12:00",
+            "label": "Đón khách"
+          },
+          {
+            "time": "12:30",
+            "label": "Lễ thành hôn"
+          },
+          {
+            "time": "13:00",
+            "label": "Khai tiệc"
+          }
+        ]
+      },
+      "style": {
+        "width": "450px",
+        "height": "330px"
+      }
+    }
+  ],
+  "WIDGET_TYPES": [
+    "text",
+    "image",
+    "album",
+    "video",
+    "icon",
+    "shape",
+    "social",
+    "button",
+    "collapse",
+    "directions",
+    "map",
+    "calendar",
+    "call",
+    "chat",
+    "countdown",
+    "wishes",
+    "rsvp",
+    "guest",
+    "registration",
+    "order",
+    "login",
+    "gift",
+    "timeline"
+  ],
+  "STYLE_KEYS": [
+    "left",
+    "top",
+    "width",
+    "height",
+    "fontSize",
+    "fontFamily",
+    "fontWeight",
+    "fontStyle",
+    "lineHeight",
+    "letterSpacing",
+    "textAlign",
+    "color",
+    "backgroundColor",
+    "borderRadius",
+    "opacity",
+    "zIndex",
+    "objectFit",
+    "objectPosition",
+    "transform",
+    "border",
+    "padding",
+    "boxShadow",
+    "textDecoration",
+    "animationName",
+    "animationDuration",
+    "animationDelay",
+    "animationIterationCount"
+  ]
+}

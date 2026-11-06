@@ -9,3 +9,6 @@ data
 templates/thiep-01/reference
 .DS_Store
 dist
+**/node_modules
+**/target
+**/dist

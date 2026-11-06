@@ -1,103 +1,99 @@
-# Ngày chung đôi — Thiệp cưới online
+# Wedding Card · Thiệp cưới online
 
-Frontend Next.js/React, backend Route Handlers, SQLite lưu bền vững. Node.js >=22.13.
+Backend **Java 25 / Spring Boot 4.1**, frontend **React / TypeScript / Vite**, database **MySQL 8.4**. Cấu trúc theo dự án capmony.
 
-## Chạy
+```text
+apps/
+  api/                 # Spring Boot, Maven
+    src/main/java/com/weddingcard/api/
+      admin/           # Quản lý khách mời
+      auth/service/    # Phiên đăng nhập admin
+      editor/          # controller, service, repository, model
+      guest/           # RSVP, lời chúc, đăng ký, đặt hàng
+      media/           # Upload, đọc và dọn file
+      statistics/      # Thống kê
+      content/         # Thiệp công khai và link chia sẻ
+      config/          # Security, Origin
+      http/            # JSON, SQL, xử lý lỗi chung
+      migration/       # Nhập dữ liệu SQLite cũ
+    src/main/resources/db/migration/
+    src/test/
+  web/
+    src/features/      # admin, editor, preview
+    src/lib/           # Model TypeScript, catalog
+    public/            # Mẫu thiệp 01, ảnh, nhạc, font
+shared/                # Mẫu mặc định, manifest, catalog dùng chung
+infra/
+  compose.yaml         # MySQL local
+  compose.production.yaml
+  nginx.conf
+  scripts/             # Chạy, kiểm thử, chuyển dữ liệu
+docs/                  # Quyết định kiến trúc và yêu cầu
+ tests/                 # Playwright + kiểm tra MySQL thực
+```
+
+## Chạy local
+
+Cần Node.js >=22.13, JDK 25, Maven 3.9, Docker hoặc Colima đã bật.
 
 ```sh
-npm install
+npm ci
 cp .env.example .env.local
-# Đặt ADMIN_PASSWORD tối thiểu 12 ký tự và SESSION_SECRET ngẫu nhiên tối thiểu 32 ký tự.
+# Đổi ADMIN_PASSWORD, SESSION_SECRET, DB_PASSWORD, MYSQL_ROOT_PASSWORD.
+# ADMIN_PASSWORD >=12 ký tự; SESSION_SECRET >=32 ký tự.
 npm run dev
 ```
 
-Thiệp: http://localhost:3100 • Dashboard: http://localhost:3100/admin
+`npm run dev` khởi động MySQL, Spring ở `8086`, Vite ở `3100`. Script hỗ trợ cả `docker compose` và `docker-compose`; tự nhận socket Colima khi có.
 
-Tài khoản quản trị dùng mật khẩu trong `.env.local`. Không có mật khẩu mặc định. Có thể tạo khóa phiên bằng `openssl rand -hex 32`. Thiết lập hai biến môi trường tương tự khi chạy production.
+- Thiệp: http://127.0.0.1:3100/thiep-01/index.html
+- Admin: http://127.0.0.1:3100/admin
+- Chỉnh sửa: http://127.0.0.1:3100/admin/editor
+- Health: http://127.0.0.1:3100/api/health
+
+Đăng nhập bằng `ADMIN_PASSWORD` trong `.env.local`. MySQL mở local ở `127.0.0.1:3308`. API và frontend dùng chung origin qua Vite proxy; truy cập đúng `APP_ORIGIN` đã cấu hình.
+
+Chạy riêng: `npm run db:up`, `npm run dev:api`, `npm run dev:web`. Dừng MySQL: `npm run db:down` (giữ volume).
 
 ## Chức năng
 
-- Thiệp tiếng Việt responsive, đếm ngược theo giờ Việt Nam, đường dẫn bản đồ và tải lịch.
-- RSVP có/không/chưa chắc, số người, số điện thoại tùy chọn, lời chúc.
-- Lưu SQLite ở `data/wedding.sqlite`, tồn tại sau khởi động lại.
-- Dashboard: thống kê, tìm kiếm, lọc, duyệt/ẩn lời chúc, xóa có xác nhận, xuất CSV chống formula injection.
-- Chỉnh tên, thời gian, địa điểm, câu chuyện và ảnh qua dashboard.
-- Cookie quản trị HttpOnly, SameSite Strict, Secure trong production, hết hạn sau 8 giờ; kiểm tra Origin cho thao tác ghi; SQL tham số hóa; lời chúc chỉ công khai sau duyệt. API công khai không trả số điện thoại hoặc trạng thái tham dự.
+Giữ mẫu thiệp 01 và hiệu ứng mở thiệp, chỉnh sửa nội dung/ảnh/nhạc/font, 27 loại thành phần, kéo thả, undo/redo, album, quà mừng và QR, nền/hiệu ứng, link cá nhân hóa khách mời, xem trước mobile/desktop. Bản nháp tách khỏi bản công khai; áp dụng tạo lịch sử; revision ngăn ghi đè giữa nhiều cửa sổ.
+
+RSVP lưu có/không dự, số khách, bên gia đình, sự kiện và lời nhắn riêng. Lời chúc chờ admin duyệt. Dashboard tìm/lọc, duyệt/ẩn, xóa, xuất CSV; thống kê lượt xem và biểu mẫu. Đăng ký/đặt hàng lưu MySQL; giá lấy từ cấu hình đã áp dụng. Chưa tích hợp thanh toán. QR quà mừng có thể thêm sau trong editor.
+
+Session admin là token ngẫu nhiên, chỉ lưu hash trong MySQL; cookie HttpOnly, SameSite Strict, 8 giờ. Kiểm tra Origin cho mọi API ghi. File được kiểm tra signature và dung lượng; giữ file đang được dùng trong nháp, bản công khai, lịch sử hoặc preset. Lời nhắn RSVP không xuất hiện ở API công khai.
+
+## Kiểm tra
+
+```sh
+npx playwright install chromium
+npm run typecheck
+npm run build
+npm test
+```
+
+`npm test` tạo và reset **chỉ** schema `wedding_card_test`, chạy Spring `8087` và Vite `3101`, kiểm tra bằng Playwright và truy vấn MySQL thực. Dữ liệu thiệp thật trong `wedding_card` không bị sửa. Kết quả và ảnh kiểm tra nằm trong `.local/`.
+
+## Chuyển dữ liệu cũ từ SQLite
+
+Thực hiện một lần vào database MySQL trống. Giữ bản sao SQLite và export ở nơi riêng tư.
+
+```sh
+node infra/scripts/export-sqlite.mjs data/wedding.sqlite /absolute/private/export.json
+node infra/scripts/import-legacy.mjs /absolute/private/export.json
+# Khi thấy Legacy import verified and completed: dừng tiến trình rồi npm run dev.
+```
+
+Importer xác minh checksum, chạy transaction, giữ ID, kiểm tra database đích trống và ghi ledger để chạy lại cùng export không nhập trùng. Không có endpoint nhập dữ liệu công khai. Upload cũ giữ trong `data/uploads`.
 
 ## Production
 
-```sh
-npm run build
-npm start
-```
+`npm run build` tạo frontend `apps/web/dist` và JAR `apps/api/target/wedding-api-1.0.0-SNAPSHOT.jar`. Có thể chạy JAR qua `node infra/scripts/api.mjs --jar`, phục vụ frontend bằng nginx, proxy `/api`, `/media`, `/i/` tới Spring.
 
-Cần máy chủ Node.js với ổ đĩa bền vững và HTTPS reverse proxy. Nếu dùng Docker, mount volume `/app/data`; đặt ADMIN_PASSWORD, SESSION_SECRET trong secret/env của máy chủ. Cookie Secure cần truy cập HTTPS ở production. Chỉ chạy một instance với SQLite; sao lưu định kỳ bằng SQLite backup API hoặc dừng ứng dụng trước khi copy toàn bộ dữ liệu. Không đưa dữ liệu khách mời, env hay database vào Git. Giới hạn đăng nhập hiện áp dụng trong bộ nhớ một tiến trình; nên cấu hình rate limit tại reverse proxy khi mở public.
-
-Dự án có tên/ngày/địa điểm mẫu cần thay trước khi gửi thiệp. Ảnh là URL HTTPS do quản trị viên cung cấp. Không có upload ảnh hoặc gửi email tự động. Mỗi lần khách gửi sẽ tạo một phản hồi riêng; có thể xóa phản hồi trùng trong dashboard. Chưa cấu hình hosting công khai. SQLite trên đĩa không phù hợp hosting Sites/Workers hoặc serverless với ổ đĩa tạm; cần chuyển database nếu triển khai lên các nền tảng đó.
-
-## RSVP trên bản thiệp đã lưu từ MeliPage
-
-Mở `/` hoặc `/thiep-01/index.html` qua server Next.js (không mở file `file://`). Bản thiệp được sao chép vào `public/thiep-01/`; file gốc trong Documents giữ nguyên. Form RSVP gửi `POST /api/rsvp`, lưu các cột riêng `side`, `event`, `message`; lời nhắn RSVP không phải lời chúc công khai.
-
-Payload: `guestName` (1–100 ký tự), `willAttend` (boolean), `numberOfGuests` (số nguyên 1–50 nếu tham dự), `eventType` (`nhatrai`/`nhagai`), `eventName` (`Lễ nhà trai`/`Lễ nhà gái`/`Tiệc cưới`, bắt buộc nếu tham dự), `message` (tối đa 2.000 ký tự), `submissionId` (mã gửi ngẫu nhiên 16–80 ký tự).
-
-Không tham dự được chuẩn hóa về số người 0 và không có sự kiện. Cùng mã gửi/cùng nội dung trả thành công mà không tạo thêm bản ghi; cùng mã/nội dung khác trả 409. Phản hồi hoàn toàn giống nhau trong một phút trả 429. Schema nâng cấp bằng cách thêm cột, không xóa dữ liệu cũ. Dashboard lọc theo bên khách, sự kiện và xuất CSV gồm các trường mới. Chưa có chức năng tự cập nhật phản hồi cũ khi khách đổi ý; phản hồi mới là bản ghi mới.
-
-Mật khẩu quản trị local lần đầu nằm trong `.local/admin-access.md` (bị Git bỏ qua); biến môi trường ở `.env.local`. Thông tin thiệp được tải từ `/api/content`; chỉnh trong dashboard sẽ cập nhật tên, ngày/giờ lễ nhà trai, địa điểm nhà trai, lời giới thiệu và ảnh chú rể. Hai nút quà mừng đang hiển thị trạng thái chưa cập nhật, chờ chủ thiệp cung cấp QR. Lời chúc đã chuyển sang `/api/wishes` và chỉ công khai sau khi duyệt. Ảnh, font, nhạc và tài nguyên album đã được bổ sung để chạy local. Không thay file gốc trong Documents.
-
-## Kiểm tra tự động
+Hoặc dùng file Compose production (Docker Compose V2):
 
 ```sh
-npm test
-npm run build
-# Trong terminal khác, khởi động server trước:
-npm run dev
-# Một lần khi máy chưa có Chromium:
-npx playwright install chromium
-# Từ terminal kiểm tra:
-npm run test:e2e
+docker compose --env-file .env.local -f infra/compose.yaml -f infra/compose.production.yaml up -d --build
 ```
 
-`test:e2e` dùng Playwright, đăng nhập bằng ADMIN_PASSWORD trong `.env.local`, chạy trên `http://127.0.0.1:3100` (có thể đổi E2E_ORIGIN), kiểm tra desktop/mobile, các thao tác UI/API, duyệt/ẩn lời chúc, CSV, thông tin riêng, xử lý lỗi và chỉnh thông tin thiệp. Test tạo dữ liệu mang tiền tố QA-FULL riêng, xóa các dữ liệu đó và khôi phục cấu hình thiệp trong finally. Chỉ chạy với môi trường local/test. Báo cáo nằm ở `.local/full-verification.json`. Trên máy cần executable Chromium khác, đặt PLAYWRIGHT_CHROMIUM_EXECUTABLE.
-
-## Trình chỉnh sửa Thiệp 01
-
-Mở `http://127.0.0.1:3100/admin/editor`, dùng cùng mật khẩu quản trị. Dashboard cũng có nút mở trình chỉnh sửa.
-
-- **Thông tin chung**: tên đôi bạn, lời giới thiệu, ảnh chú rể, tên bố mẹ.
-- **Mở thiệp**: bật/tắt, lời mời, người nhận, chữ nút, nền và sáu ảnh trang trí phong bì.
-- **Hai lễ cưới**: ngày/giờ UTC+7, địa điểm, địa chỉ, link bản đồ và ngày âm riêng từng bên. Ngày âm là nội dung nhập tay.
-- **Thành phần**: bấm trực tiếp hoặc tìm trong 95 thành phần gốc; sửa chữ, ảnh, link, màu, font, cỡ, vị trí, lớp, viền, góc xoay, khoảng cách, hiệu ứng; kéo để di chuyển; ẩn/xóa/khôi phục. Thêm chữ, ảnh, nút hoặc hình mới. Lịch trình chỉnh bằng các ô chữ trong mục này.
-- **Ảnh & album**: tải ảnh, thay ảnh, chú thích, thêm/xóa và sắp xếp; album lớn dùng cùng ảnh đã chọn.
-- **Biểu mẫu**: tiêu đề, hướng dẫn, chữ nút, placeholder, danh sách sự kiện RSVP; backend chỉ nhận các sự kiện đã áp dụng.
-- **Nhạc & quà mừng**: tải nhạc, bật/tắt, QR và thông tin ngân hàng mỗi bên. Có thể chỉ nhập ngân hàng khi chưa có QR.
-- **Màu & trang trí**: màu chủ đạo/nền, giữ font gốc hoặc font chung/tải font, chiều cao thiệp.
-- **Lịch sử**: xem và khôi phục một lần áp dụng cũ vào nháp. Có hoàn tác/làm lại trong phiên chỉnh sửa.
-
-**Lưu bản nháp** chỉ lưu cho quản trị. **Áp dụng lên thiệp** lưu và đưa bản đó lên đường dẫn thiệp hiện tại; việc này không tạo hosting công khai. Có kiểm tra revision để tránh ghi đè giữa hai cửa sổ. Trước khi rời trang khi còn thay đổi chưa lưu, trình duyệt hiển thị cảnh báo.
-
-SQLite tự thêm bảng `editor_documents` (nháp, bản đang áp dụng, revision), `editor_versions` (lịch sử), `media_assets` (thông tin file). File ở `data/uploads/`, phục vụ qua `/media/<uuid>.<ext>`. Sao lưu cả database và thư mục uploads. Ảnh tối đa 8 MB; nhạc 20 MB; font 3 MB. Hỗ trợ PNG/JPG/WebP/GIF, MP3/M4A/WAV/OGG, TTF/OTF/WOFF2; từ chối SVG/HTML. Không sửa file gốc trong Documents.
-
-Chạy `npm run test:editor` khi server local đang chạy để kiểm tra toàn luồng chỉnh/sửa/tải file/lưu nháp/áp dụng/khôi phục/RSVP tùy chỉnh. Test khôi phục trạng thái database trước đó và xóa tài nguyên thử, trừ khi phát hiện một cửa sổ khác vừa lưu đồng thời. Báo cáo: `.local/editor-verification.json`.
-
-## Hiệu ứng mở thiệp
-
-Chuyển động được điều khiển trong `public/thiep-01/opening-motion.js` và `opening-motion.css`: một luồng mở duy nhất, hai phần phong bì tách theo đường con dấu rồi mờ dần trong khoảng 1,2 giây. Không chờ animationend từ chi tiết con; có thời gian dự phòng để mở khóa cuộn. Hỗ trợ prefers-reduced-motion (chỉ mờ nhanh), Escape khi đang mở, khôi phục cuộn và xem lại trong editor. Không dịch chuyển toàn bộ canvas thiệp dài. Chạy `npm run test:motion` với server local đang bật; báo cáo `.local/opening-verification.json`.
-
-## Studio theo thư viện thành phần
-
-`/admin/editor` có thanh công cụ **Thành phần / Stock / Preset / Nền / Hiệu ứng / Media / Preview / Thống kê / Cài đặt**, cùng mục Hỗ trợ.
-
-- 27 ô thành phần: văn bản, H1/H2/H3, đoạn văn, ảnh, album, video MP4, biểu tượng, hình dạng, mạng xã hội; nút, thu gọn/xem thêm, chỉ đường, bản đồ Google, lịch, gọi điện, chat qua link, đếm ngược; sổ lưu bút, RSVP, tên khách, đăng ký, đặt hàng, đăng nhập quản trị, quà mừng và lịch trình. Chọn khối để sửa cấu hình và bố cục ở Thuộc tính.
-- Stock dùng các ảnh trang trí đã có trong dự án. Media cho tải nhiều file, xem ảnh có sẵn, nhãn đã dùng, thêm lên thiệp và dọn file chưa sử dụng. File thuộc bản nháp, bản đã áp dụng, lịch sử hoặc preset được bảo vệ. Video MP4 tối đa 20 MB.
-- Preset có bốn bảng màu và lưu/nạp/xóa các bản mẫu của riêng bạn. Thao tác dùng preset chỉ thay bản nháp.
-- Hiệu ứng cho bật/tắt biểu tượng bay, đổi biểu tượng, mở mục phong bì và đổi màu toàn thiệp. Nền cho chọn màu/ảnh nền.
-- Cài đặt có tên khách mặc định, slug, tự chạy nhạc sau thao tác mở thiệp, phóng to trên màn PC và QR chia sẻ xuất PNG. Link `/i/<slug>?guest=<tên>` dùng slug **đã áp dụng**. Link trên localhost chỉ mở ở máy hiện tại; khi hosting có domain, QR dùng origin domain đó.
-- Preview trên editor có thử nút/video/thu gọn nhưng chặn gửi form. `/admin/preview` mở bản nháp đã lưu ở tab riêng, cần đăng nhập.
-- Khối đăng nhập dùng mật khẩu quản trị hiện có, không tạo tài khoản khách hay lưu mật khẩu trong dữ liệu biểu mẫu.
-- Khối đăng ký và đặt hàng dùng `POST /api/submissions`, chỉ nhận widget đã áp dụng và đang hiển thị; chống gửi trùng, kiểm tra dữ liệu. Đặt hàng là yêu cầu để chủ thiệp xác nhận; không xử lý thanh toán. Giá/tổng tiền được tính ở backend từ cấu hình widget, không nhận giá từ khách.
-- Thống kê gồm lượt xem/khách truy cập, RSVP, lời chúc, đăng ký/đặt hàng; đổi trạng thái/xóa và xuất CSV. Tối đa 500 đăng ký/đặt hàng gần nhất trong một lần tải. Lượt xem local bao gồm các lần mở thử trang; chế độ chỉnh sửa không tính lượt xem. Không lưu địa chỉ IP, chỉ mã khách băm và ngày để tính lượt xem.
-
-Bảng bổ sung: `editor_presets`, `visit_events`, `widget_submissions`. Nội dung cũ được nâng cấp với giá trị mặc định khi đọc, không xóa bản nháp hoặc lịch sử hiện có.
-
-`npm run test:studio` kiểm tra thư viện, media, preset, hiệu ứng, QR, slug, video thực, tương tác, đăng ký/đặt hàng, đăng nhập và thống kê. Báo cáo `.local/studio-verification.json`. Lần chạy đầu có thể tải video mẫu từ Mozilla vào `.local/test-flower.mp4`; dùng `STUDIO_VIDEO_FIXTURE` để chỉ định video MP4 sẵn có. Test khôi phục bản nháp/bản đang áp dụng và dọn dữ liệu của chính nó, tránh ghi đè khi phát hiện phiên lưu khác.
+Đặt `APP_ORIGIN` thành URL HTTPS thật và `COOKIE_SECURE=true` khi đặt sau HTTPS reverse proxy. Thư mục upload và MySQL dùng volume bền vững; sao lưu cả hai. Bật TLS cho kết nối MySQL từ xa. Không đưa `.env`, export hoặc dữ liệu khách mời lên Git. Giới hạn đăng nhập hiện nằm trong bộ nhớ một API instance; triển khai nhiều instance cần rate limit chung tại proxy.

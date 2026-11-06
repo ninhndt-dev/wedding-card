@@ -1,36 +1,28 @@
 {
-  "name": "wedding-invitation",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "lib": "lib"
-  },
-  "scripts": {
-    "dev": "next dev --hostname 127.0.0.1 --port 3100",
-    "build": "next build",
-    "start": "next start --hostname 0.0.0.0 --port 3100",
-    "test": "node --test tests/*.test.mjs",
-    "test:e2e": "node tests/e2e.cjs",
-    "test:editor": "node tests/editor-e2e.cjs",
-    "test:motion": "node tests/opening-e2e.cjs",
-    "test:studio": "node tests/studio-e2e.cjs"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "name": "wedding-card",
+  "version": "2.0.0",
   "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/web"
+  ],
   "engines": {
     "node": ">=22.13.0"
   },
-  "dependencies": {
-    "next": "^16.0.0",
-    "qrcode": "^1.5.4",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+  "scripts": {
+    "dev": "node infra/scripts/dev.mjs",
+    "dev:web": "npm run dev -w @wedding/web",
+    "dev:api": "node infra/scripts/api.mjs",
+    "db:up": "node infra/scripts/db.mjs up",
+    "db:down": "node infra/scripts/db.mjs down",
+    "build": "npm run build -w @wedding/web && mvn -q -f apps/api/pom.xml package",
+    "typecheck": "npm run typecheck -w @wedding/web",
+    "test": "node infra/scripts/test.mjs",
+    "test:e2e": "node infra/scripts/test.mjs"
   },
   "devDependencies": {
-    "playwright": "^1.60.0"
-  },
-  "type": "module"
+    "mysql2": "^3.24.6",
+    "playwright": "^1.60.0",
+    "prettier": "^3.9.10"
+  }
 }

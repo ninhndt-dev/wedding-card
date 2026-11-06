@@ -1,0 +1,30 @@
+server:
+  port: ${API_PORT:8086}
+  shutdown: graceful
+  error:
+    include-message: never
+    include-stacktrace: never
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3308}/${DB_NAME:wedding_card}?sslMode=${DB_SSL_MODE:DISABLED}&allowPublicKeyRetrieval=true&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&characterEncoding=UTF-8
+    username: ${DB_USER:wedding}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 8
+      transaction-isolation: TRANSACTION_READ_COMMITTED
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+app:
+  origin: ${APP_ORIGIN:http://127.0.0.1:3100}
+  admin-password: ${ADMIN_PASSWORD}
+  session-secret: ${SESSION_SECRET}
+  cookie-secure: ${COOKIE_SECURE:false}
+  upload-dir: ${UPLOAD_DIR:../../data/uploads}
+  migration-file: ${MIGRATION_FILE:}
+logging:
+  level:
+    org.springframework.security: WARN

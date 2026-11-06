@@ -1,0 +1,344 @@
+import type { AdminState } from "../../lib/types";
+("use client");
+import { useState, useEffect } from "react";
+const labels = {
+  bride: "Tên cô dâu",
+  groom: "Tên chú rể",
+  date: "Ngày giờ lễ nhà trai (giờ Việt Nam)",
+  venue: "Địa điểm nhà trai",
+  address: "Địa chỉ nhà trai",
+  story: "Lời giới thiệu trên thiệp",
+  photo: "Ảnh giới thiệu chú rể (URL HTTPS, không bắt buộc)",
+};
+export default function Admin() {
+  const [data, setData] = useState<AdminState | null>(null),
+    [message, setMessage] = useState(""),
+    [search, setSearch] = useState(""),
+    [filter, setFilter] = useState("all"),
+    [sideFilter, setSideFilter] = useState("all"),
+    [eventFilter, setEventFilter] = useState("all"),
+    [busy, setBusy] = useState(false);
+  async function load() {
+    const r = await fetch("/api/admin");
+    if (r.ok) setData(await r.json());
+    else setData(null);
+  }
+  useEffect(() => {
+    load().catch(() => setMessage("Không thể kết nối máy chủ."));
+  }, []);
+  async function action(body) {
+    setMessage("");
+    setBusy(true);
+    try {
+      const r = await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const d = await r.json();
+      if (!r.ok) {
+        if (r.status === 401) setData(null);
+        throw Error(d.error);
+      }
+      if (body.action === "logout") setData(null);
+      else await load();
+      setMessage(
+        body.action === "settings" ? "Đã lưu thông tin thiệp." : "Đã cập nhật.",
+      );
+    } catch (e) {
+      setMessage(e.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  function csv() {
+    const rows = [
+      [
+        "Tên",
+        "Điện thoại",
+        "Tham dự",
+        "Số người",
+        "Khách của",
+        "Sự kiện",
+        "Lời nhắn riêng",
+        "Lời chúc",
+        "Đã duyệt",
+        "Ngày gửi",
+      ],
+      ...data.guests.map((g) => [
+        g.name,
+        g.phone,
+        { yes: "Có", no: "Không", maybe: "Chưa chắc" }[g.attending],
+        g.count,
+        { nhatrai: "Chú rể", nhagai: "Cô dâu" }[g.side] || "",
+        g.event || "",
+        g.message || "",
+        g.wish,
+        g.approved ? "Có" : "Không",
+        g.created,
+      ]),
+    ];
+    const quote = (v) =>
+      '"' +
+      String(/^[=+@\-\t\r]/.test(String(v)) ? "'" + v : v).replaceAll(
+        '"',
+        '""',
+      ) +
+      '"';
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(
+      new Blob(
+        ["\ufeff" + rows.map((r) => r.map(quote).join(",")).join("\r\n")],
+        { type: "text/csv;charset=utf-8" },
+      ),
+    );
+    a.download = "khach-moi.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  return (
+    <main className="admin">
+      <header>
+        <a href="/" className="brand">
+          NGÀY CHUNG ĐÔI ✧
+        </a>
+        <a href="/admin/editor">Chỉnh sửa thiệp</a>
+        <a href="/thiep-01/index.html" target="_blank" rel="noreferrer">
+          Xem thiệp ↗
+        </a>
+      </header>
+      {!data ? (
+        <div className="login">
+          <p className="eyebrow">DÀNH CHO HAI BẠN</p>
+          <h1>Quản trị thiệp cưới</h1>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              action({
+                action: "login",
+                password: new FormData(e.currentTarget).get("password"),
+              });
+            }}
+          >
+            <label>
+              Mật khẩu quản trị
+              <input
+                type="password"
+                name="password"
+                autoComplete="current-password"
+                required
+              />
+            </label>
+            <button className="button" disabled={busy}>
+              Đăng nhập ↗
+            </button>
+          </form>
+          <p role="status">{message}</p>
+        </div>
+      ) : (
+        <>
+          <div className="adminheading">
+            <div>
+              <p className="eyebrow">MỌI THỨ CHO NGÀY TRỌNG ĐẠI</p>
+              <h1>Tổng quan khách mời</h1>
+            </div>
+            <button
+              disabled={busy}
+              onClick={() => action({ action: "logout" })}
+            >
+              Đăng xuất
+            </button>
+          </div>
+          <p role="status">{message}</p>
+          <div className="stats">
+            {[
+              ["Phản hồi", data.guests.length],
+              [
+                "Sẽ tham dự",
+                data.guests.filter((g) => g.attending === "yes").length,
+              ],
+              [
+                "Tổng khách dự kiến",
+                data.guests
+                  .filter((g) => g.attending === "yes")
+                  .reduce((a, g) => a + g.count, 0),
+              ],
+              [
+                "Chờ duyệt lời chúc",
+                data.guests.filter((g) => g.wish && !g.approved).length,
+              ],
+            ].map(([l, n]) => (
+              <div key={l}>
+                <span>{l}</span>
+                <strong>{n}</strong>
+              </div>
+            ))}
+          </div>
+          <section className="adminpanel">
+            <div className="toolbar">
+              <h2>Danh sách phản hồi</h2>
+              <button onClick={csv}>Xuất CSV ↓</button>
+              <button
+                onClick={() =>
+                  load().catch(() => setMessage("Không thể tải dữ liệu."))
+                }
+              >
+                Làm mới
+              </button>
+            </div>
+            <div className="toolbar">
+              <input
+                aria-label="Tìm khách mời"
+                placeholder="Tìm tên hoặc số điện thoại…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <select
+                aria-label="Lọc phản hồi"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                <option value="all">Tất cả phản hồi</option>
+                <option value="yes">Sẽ tham dự</option>
+                <option value="no">Không tham dự</option>
+                <option value="maybe">Chưa chắc</option>
+                <option value="wish">Lời chúc</option>
+                <option value="pending">Lời chúc chờ duyệt</option>
+              </select>
+              <select
+                aria-label="Lọc bên khách mời"
+                value={sideFilter}
+                onChange={(e) => setSideFilter(e.target.value)}
+              >
+                <option value="all">Hai bên gia đình</option>
+                <option value="nhatrai">Khách chú rể</option>
+                <option value="nhagai">Khách cô dâu</option>
+              </select>
+              <select
+                aria-label="Lọc sự kiện"
+                value={eventFilter}
+                onChange={(e) => setEventFilter(e.target.value)}
+              >
+                <option value="all">Tất cả sự kiện</option>
+                {(
+                  data.eventNames || ["Lễ nhà trai", "Lễ nhà gái", "Tiệc cưới"]
+                ).map((x) => (
+                  <option key={x}>{x}</option>
+                ))}
+              </select>
+            </div>
+            <div className="tablewrap">
+              <table>
+                <thead>
+                  <tr>
+                    {[
+                      "Khách mời",
+                      "Tham dự",
+                      "Số người",
+                      "Khách của",
+                      "Sự kiện",
+                      "Lời nhắn riêng",
+                      "Lời chúc",
+                      "Ngày gửi (UTC)",
+                      "Quản lý",
+                    ].map((x) => (
+                      <th key={x}>{x}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.guests
+                    .filter(
+                      (g) =>
+                        (g.name + " " + g.phone)
+                          .toLowerCase()
+                          .includes(search.toLowerCase()) &&
+                        (sideFilter === "all" || sideFilter === g.side) &&
+                        (eventFilter === "all" || eventFilter === g.event) &&
+                        (filter === "all" ||
+                          (filter === "wish" && g.kind === "wish") ||
+                          (g.kind !== "wish" && filter === g.attending) ||
+                          (filter === "pending" && g.wish && !g.approved)),
+                    )
+                    .map((g) => (
+                      <tr key={g.id}>
+                        <td>
+                          <b>{g.name}</b>
+                          <small>{g.phone || "Không cung cấp SĐT"}</small>
+                        </td>
+                        <td>
+                          <span className={"badge " + g.attending}>
+                            {g.kind === "wish"
+                              ? "Lời chúc"
+                              : {
+                                  yes: "Sẽ đến",
+                                  no: "Không đến",
+                                  maybe: "Chưa chắc",
+                                }[g.attending]}
+                          </span>
+                        </td>
+                        <td>{g.count}</td>
+                        <td>
+                          {{ nhatrai: "Chú rể", nhagai: "Cô dâu" }[g.side] ||
+                            "—"}
+                        </td>
+                        <td>{g.event || "—"}</td>
+                        <td className="wishcell">{g.message || "—"}</td>
+                        <td className="wishcell">{g.wish || "—"}</td>
+                        <td>{g.created}</td>
+                        <td>
+                          {g.wish && (
+                            <button
+                              disabled={busy}
+                              onClick={() =>
+                                action({
+                                  action: "approve",
+                                  id: g.id,
+                                  approved: !g.approved,
+                                })
+                              }
+                            >
+                              {g.approved ? "Ẩn lời chúc" : "Duyệt lời chúc"}
+                            </button>
+                          )}
+                          <button
+                            disabled={busy}
+                            className="danger"
+                            onClick={() => {
+                              if (
+                                confirm(
+                                  "Xóa vĩnh viễn phản hồi của " + g.name + "?",
+                                )
+                              )
+                                action({ action: "delete", id: g.id });
+                            }}
+                          >
+                            Xóa
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              {!data.guests.length && (
+                <p className="empty">
+                  Chưa có phản hồi. Chia sẻ thiệp để nhận lời chúc đầu tiên.
+                </p>
+              )}
+            </div>
+          </section>
+          <section className="adminpanel">
+            <h2>Chỉnh sửa thiệp</h2>
+            <p>
+              Sửa nội dung, ảnh, hai gia đình, lịch trình, bố cục, nhạc và QR
+              trong trình chỉnh sửa.
+            </p>
+            <a className="button" href="/admin/editor">
+              Mở trình chỉnh sửa ↗
+            </a>
+          </section>
+        </>
+      )}
+    </main>
+  );
+}
