@@ -5,6 +5,7 @@ import com.weddingcard.api.media.service.MediaService;
 import java.nio.file.Files;
 import java.util.Map;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,8 +34,15 @@ public class MediaController {
       throw new ApiError(404, "Không tìm thấy file.");
     String ext = filename.substring(filename.lastIndexOf('.') + 1),
         mime = MediaService.TYPES.get(ext);
+    if (mime == null) throw new ApiError(404, "Không tìm thấy file.");
+    byte[] content = service.content(filename);
+    if (content != null)
+      return ResponseEntity.ok()
+          .header("Cache-Control", "public,max-age=31536000,immutable")
+          .contentType(MediaType.parseMediaType(mime))
+          .body(new ByteArrayResource(content));
     var path = service.directory().resolve(filename);
-    if (mime == null || !Files.isRegularFile(path)) throw new ApiError(404, "Không tìm thấy file.");
+    if (!Files.isRegularFile(path)) throw new ApiError(404, "Không tìm thấy file.");
     return ResponseEntity.ok()
         .header("Cache-Control", "public,max-age=31536000,immutable")
         .contentType(MediaType.parseMediaType(mime))

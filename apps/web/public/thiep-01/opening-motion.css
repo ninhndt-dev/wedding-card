@@ -2,7 +2,7 @@
 html{scrollbar-gutter:stable}
 #miuOpeningSides{height:100svh;isolation:isolate}
 #miuOpeningSides.default .card-side.left,#miuOpeningSides.default .card-side.right{animation:none!important;will-change:auto;backface-visibility:hidden}
-#miuOpening[data-motion="opening"]{will-change:opacity}#miuOpening[data-motion="opening"] .card-side{will-change:transform,opacity}
+#miuOpening[data-motion="opening"]{will-change:opacity}#miuOpening[data-motion="opening"] #miuOpeningSides{will-change:translate,scale,opacity}
 #miuOpening[data-motion="opening"]{pointer-events:none}
 #miuOpeningSides .miu-env-nutthiep{animation:openingSealBreathe 2200ms cubic-bezier(.45,0,.55,1) infinite;backface-visibility:hidden}
 #miuOpeningSides .miu-env-click-btn{animation:openingHintBreathe 2400ms cubic-bezier(.45,0,.55,1) infinite;backface-visibility:hidden}

@@ -29,7 +29,7 @@ public class EditorService {
     var out = repo.state();
     out.put("manifest", repo.json().resource("editor-manifest.json"));
     out.put(
-        "assets", repo.sql().rows("SELECT * FROM media_assets ORDER BY created DESC LIMIT 500"));
+        "assets", repo.sql().rows("SELECT id,filename,original_name,mime,bytes,created FROM media_assets ORDER BY created DESC LIMIT 500"));
     out.put("presets", repo.presets());
     return out;
   }

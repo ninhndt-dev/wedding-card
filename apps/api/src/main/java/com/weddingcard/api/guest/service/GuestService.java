@@ -5,6 +5,7 @@ import static com.weddingcard.api.http.Json.*;
 import com.weddingcard.api.editor.repository.EditorRepository;
 import com.weddingcard.api.guest.repository.GuestRepository;
 import com.weddingcard.api.http.*;
+import com.weddingcard.api.invitation.service.InvitationService;
 import java.util.*;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +14,13 @@ public class GuestService {
   private final GuestRepository repo;
   private final EditorRepository editor;
   private final Json json;
+  private final InvitationService invitations;
 
-  public GuestService(GuestRepository repo, EditorRepository editor, Json json) {
+  public GuestService(GuestRepository repo, EditorRepository editor, Json json, InvitationService invitations) {
     this.repo = repo;
     this.editor = editor;
     this.json = json;
+    this.invitations = invitations;
   }
 
   public List<Object> events() {
@@ -33,8 +36,15 @@ public class GuestService {
         || !List.of("nhatrai", "nhagai").contains(side)) throw ApiError.bad();
     if ((attend || !event.isEmpty()) && !events().contains(event)) throw ApiError.bad();
     long count = attend ? number(b.get("numberOfGuests"), 1, 50) : 0;
+    String token = str(b, "invitationToken", 48, false);
+    if (attend && !token.isEmpty()) {
+      long limit = ((Number) invitations.byToken(token).get("invited_count")).longValue();
+      if (limit > 0 && count > limit)
+        throw new ApiError(400, "Thiệp này mời tối đa " + limit + " người. Vui lòng chỉnh số người tham dự.");
+    }
     if (!attend) event = "";
     String key = key(b);
+    Long invitationId = invitations.idFromBody(b);
     var data = new LinkedHashMap<String, Object>();
     data.put("name", name);
     data.put("message", message);
@@ -42,14 +52,15 @@ public class GuestService {
     data.put("event", event);
     data.put("attending", attend ? "yes" : "no");
     data.put("count", count);
+    data.put("invitationId", invitationId);
     String hash = hash(json.write(data));
     return repo.store(
         "guests",
         key,
         hash,
         "INSERT INTO"
-            + " guests(name,attending,count,side,event,message,wish,submission_key,payload_hash)"
-            + " VALUES(?,?,?,?,?,?,'',?,?)",
+            + " guests(name,attending,count,side,event,message,wish,submission_key,payload_hash,invitation_id)"
+            + " VALUES(?,?,?,?,?,?,'',?,?,?)",
         name,
         attend ? "yes" : "no",
         count,
@@ -57,24 +68,27 @@ public class GuestService {
         event,
         message,
         key,
-        hash);
+        hash,
+        invitationId);
   }
 
   public Map<String, Object> wish(Map<String, Object> b) {
     String name = str(b, "name", 100, true),
         wish = str(b, "wish", 2000, true),
         key = "wish-" + key(b),
-        hash = hash(json.write(Map.of("name", name, "wish", wish)));
+        hash = hash(json.write(Map.of("name", name, "wish", wish, "invitationToken", str(b, "invitationToken", 48, false))));
+    Long invitationId = invitations.idFromBody(b);
     return repo.store(
         "guests",
         key,
         hash,
-        "INSERT INTO guests(name,attending,count,wish,message,submission_key,payload_hash,kind)"
-            + " VALUES(?,'maybe',0,?,'',?,?,'wish')",
+        "INSERT INTO guests(name,attending,count,wish,message,submission_key,payload_hash,kind,invitation_id)"
+            + " VALUES(?,'maybe',0,?,'',?,?,'wish',?)",
         name,
         wish,
         key,
-        hash);
+        hash,
+        invitationId);
   }
 
   public Map<String, Object> legacy(Map<String, Object> b) {
@@ -136,14 +150,16 @@ public class GuestService {
     data.put("quantity", quantity);
     data.put("product", product);
     data.put("total", total);
+    Long invitationId = invitations.idFromBody(b);
+    data.put("invitationId", invitationId);
     String hash = hash(json.write(data));
     return repo.store(
         "widget_submissions",
         key,
         hash,
         "INSERT INTO"
-            + " widget_submissions(widget_id,kind,name,phone,email,note,product,quantity,total,submission_key,payload_hash)"
-            + " VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+            + " widget_submissions(widget_id,kind,name,phone,email,note,product,quantity,total,submission_key,payload_hash,invitation_id)"
+            + " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
         id,
         kind,
         name,
@@ -154,7 +170,8 @@ public class GuestService {
         quantity,
         total,
         key,
-        hash);
+        hash,
+        invitationId);
   }
 
   private String key(Map<String, Object> b) {

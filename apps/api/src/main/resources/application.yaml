@@ -1,5 +1,5 @@
 server:
-  port: ${API_PORT:8086}
+  port: ${PORT:${API_PORT:8086}}
   shutdown: graceful
   error:
     include-message: never
@@ -10,7 +10,8 @@ spring:
     username: ${DB_USER:wedding}
     password: ${DB_PASSWORD}
     hikari:
-      maximum-pool-size: 8
+      maximum-pool-size: ${DB_POOL_MAX:8}
+      minimum-idle: ${DB_POOL_MIN:0}
       transaction-isolation: TRANSACTION_READ_COMMITTED
   flyway:
     enabled: true
@@ -24,6 +25,7 @@ app:
   session-secret: ${SESSION_SECRET}
   cookie-secure: ${COOKIE_SECURE:false}
   upload-dir: ${UPLOAD_DIR:../../data/uploads}
+  media-max-bytes: ${MEDIA_MAX_BYTES:20971520}
   migration-file: ${MIGRATION_FILE:}
 logging:
   level:

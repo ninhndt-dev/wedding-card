@@ -50,6 +50,7 @@ npm run dev
 - Admin: http://127.0.0.1:3100/admin
 - Chỉnh sửa: http://127.0.0.1:3100/admin/editor
 - Health: http://127.0.0.1:3100/api/health
+- Danh sách thiệp khách mời: http://127.0.0.1:3100/admin/invitations
 
 Đăng nhập bằng `ADMIN_PASSWORD` trong `.env.local`. MySQL mở local ở `127.0.0.1:3308`. API và frontend dùng chung origin qua Vite proxy; truy cập đúng `APP_ORIGIN` đã cấu hình.
 
@@ -62,6 +63,14 @@ Giữ mẫu thiệp 01 và hiệu ứng mở thiệp, chỉnh sửa nội dung/�
 RSVP lưu có/không dự, số khách, bên gia đình, sự kiện và lời nhắn riêng. Lời chúc chờ admin duyệt. Dashboard tìm/lọc, duyệt/ẩn, xóa, xuất CSV; thống kê lượt xem và biểu mẫu. Đăng ký/đặt hàng lưu MySQL; giá lấy từ cấu hình đã áp dụng. Chưa tích hợp thanh toán. QR quà mừng có thể thêm sau trong editor.
 
 Session admin là token ngẫu nhiên, chỉ lưu hash trong MySQL; cookie HttpOnly, SameSite Strict, 8 giờ. Kiểm tra Origin cho mọi API ghi. File được kiểm tra signature và dung lượng; giữ file đang được dùng trong nháp, bản công khai, lịch sử hoặc preset. Lời nhắn RSVP không xuất hiện ở API công khai.
+
+## Thiệp riêng cho khách mời
+
+Đăng nhập quản trị rồi mở **Danh sách thiệp khách mời**. Tải file CSV hoặc Excel `.xlsx` có hàng tiêu đề và cột tên khách (ví dụ `Tên khách / đại diện gia đình`). Các cột tùy chọn gồm điện thoại, bên mời, sự kiện, số người được mời và ghi chú. Nếu tên trùng, dòng cuối trong file được dùng; nhập lại cùng tên giữ nguyên link đã tạo. Có thể thêm khách, sửa thông tin, sao chép link và xuất danh sách CSV.
+
+Mỗi link có mã riêng để gắn lượt xem, RSVP, lời chúc và biểu mẫu đăng ký/đặt hàng với đúng thiệp. Danh sách hiển thị phản hồi mới nhất và giữ lịch sử các lần gửi. Link `?guest=` cũ vẫn hoạt động nhưng không gắn phản hồi vào một thiệp riêng.
+
+Nếu đặt **Số người được mời** lớn hơn 0 cho một thiệp, biểu mẫu RSVP sẽ hiển thị giới hạn đó và API từ chối số người tham dự vượt giới hạn. Giá trị 0 nghĩa là chưa đặt giới hạn riêng.
 
 ## Kiểm tra
 
@@ -87,6 +96,16 @@ node infra/scripts/import-legacy.mjs /absolute/private/export.json
 Importer xác minh checksum, chạy transaction, giữ ID, kiểm tra database đích trống và ghi ledger để chạy lại cùng export không nhập trùng. Không có endpoint nhập dữ liệu công khai. Upload cũ giữ trong `data/uploads`.
 
 ## Production
+
+### Vercel (một container, gói miễn phí)
+
+`Dockerfile.vercel` đóng frontend Vite và Spring Boot vào cùng một container. Vercel chạy container theo request; không dùng volume bền vững. Ảnh tải lên qua editor được lưu trong cột `media_assets.content` của MySQL (Flyway V3). Ảnh mẫu vẫn được đóng trong frontend. Đây là lựa chọn cho thiệp cá nhân ít lượt xem; tổng ảnh upload và dữ liệu phải nằm trong giới hạn của MySQL Free.
+
+Cần một MySQL 8 online hỗ trợ TLS, ví dụ Aiven MySQL Free (1 GB). Tạo database trước, sao lưu và nhập dữ liệu `wedding_card` hiện tại nếu muốn giữ nội dung/khách mời/phản hồi. Không dùng `.env.local` làm cấu hình production. Trong Vercel, đặt riêng các biến `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `APP_ORIGIN`, `ADMIN_PASSWORD`, `SESSION_SECRET`. `APP_ORIGIN` là URL HTTPS production chính xác; `SESSION_SECRET` tối thiểu 32 ký tự. Container đã đặt `COOKIE_SECURE=true`, `DB_SSL_MODE=REQUIRED` (TLS bắt buộc theo ví dụ JDBC của Aiven), giới hạn upload 4 MiB và pool MySQL tối đa bốn kết nối mỗi instance. Nếu dùng `VERIFY_IDENTITY`, cần cấu hình thêm CA của Aiven vào Java truststore. Không đưa mật khẩu vào Git hay chat.
+
+Sau khi deploy, kiểm tra `/api/health`, `/thiep-01/index.html`, `/admin`, một link `/i/{slug}/{token}`, RSVP và ảnh upload. Ảnh lớn hơn 4 MiB không upload được trên Vercel. Gói Hobby có hạn mức; khi chạm hạn mức dịch vụ có thể ngừng phục vụ đến chu kỳ tiếp theo, không tự chuyển sang gói trả phí. Không bật Pro hoặc tài nguyên trả phí nếu cần giữ chi phí bằng 0.
+
+### Docker Compose
 
 `npm run build` tạo frontend `apps/web/dist` và JAR `apps/api/target/wedding-api-1.0.0-SNAPSHOT.jar`. Có thể chạy JAR qua `node infra/scripts/api.mjs --jar`, phục vụ frontend bằng nginx, proxy `/api`, `/media`, `/i/` tới Spring.
 

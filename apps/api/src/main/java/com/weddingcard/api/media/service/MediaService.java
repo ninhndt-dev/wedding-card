@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MediaService {
   private final EditorRepository repo;
   private final Path directory;
+  private final int maxBytes;
 
   public Path directory() {
     return directory;
@@ -34,9 +35,11 @@ public class MediaService {
           Map.entry("otf", "font/otf"),
           Map.entry("ttf", "font/ttf"));
 
-  public MediaService(EditorRepository repo, @Value("${app.upload-dir}") String path)
+  public MediaService(EditorRepository repo, @Value("${app.upload-dir}") String path,
+      @Value("${app.media-max-bytes:20971520}") int maxBytes)
       throws Exception {
     this.repo = repo;
+    this.maxBytes = maxBytes;
     directory = Path.of(path).toAbsolutePath().normalize();
     Files.createDirectories(directory);
   }
@@ -47,27 +50,17 @@ public class MediaService {
     if (ext == null) throw new ApiError(400, "Định dạng file không được hỗ trợ.");
     String mime = TYPES.get(ext);
     int limit = mime.startsWith("font/") ? 3 : mime.startsWith("image/") ? 8 : 20;
-    if (b.length > limit * 1024 * 1024) throw new ApiError(413, "File quá lớn.");
+    if (b.length > limit * 1024 * 1024 || b.length > maxBytes)
+      throw new ApiError(413, "File quá lớn.");
     String id = UUID.randomUUID().toString(), filename = id + "." + ext;
     String name =
         Optional.ofNullable(file.getOriginalFilename())
             .orElse("file")
             .replaceAll("[\\p{Cntrl}]", "");
     if (name.length() > 200) name = name.substring(name.length() - 200);
-    Files.write(directory.resolve(filename), b, StandardOpenOption.CREATE_NEW);
-    try {
-      repo.sql()
-          .update(
-              "INSERT INTO media_assets(id,filename,original_name,mime,bytes) VALUES(?,?,?,?,?)",
-              id,
-              filename,
-              name,
-              mime,
-              b.length);
-    } catch (Exception e) {
-      Files.deleteIfExists(directory.resolve(filename));
-      throw e;
-    }
+    repo.sql().update(
+        "INSERT INTO media_assets(id,filename,original_name,mime,bytes,content) VALUES(?,?,?,?,?,?)",
+        id, filename, name, mime, b.length, b);
     return Map.of(
         "asset",
         Map.of(
@@ -83,6 +76,11 @@ public class MediaService {
             b.length,
             "url",
             "/media/" + filename));
+  }
+
+  public byte[] content(String filename) {
+    var row = repo.sql().one("SELECT content FROM media_assets WHERE filename=?", filename);
+    return row == null ? null : (byte[]) row.get("content");
   }
 
   @Transactional

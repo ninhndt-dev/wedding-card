@@ -1,0 +1,8 @@
+.env*
+infra/.env
+.local
+data
+node_modules
+apps/web/dist
+apps/api/target
+templates/thiep-01/reference

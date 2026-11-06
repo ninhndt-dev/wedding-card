@@ -119,6 +119,22 @@ export default function Editor() {
     setDirty(true);
     setMessage("");
   }
+  function removeNode(id: string) {
+    const document = current.current;
+    if (!document || !id) return;
+    const custom = document.additions.some((node) => node.id === id);
+    if (!custom && !meta?.manifest.nodes.some((node) => node.id === id))
+      return;
+    change((draft) => {
+      if (custom) draft.additions = draft.additions.filter((node) => node.id !== id);
+      else {
+        draft.nodes[id] ??= { style: {} };
+        draft.nodes[id].hidden = true;
+      }
+    });
+    setSelected(null);
+    send("select", { id: null });
+  }
   function send(type, payload = {}) {
     frame.current?.contentWindow?.postMessage(
       { source: "wedding-editor", type, ...payload },
@@ -150,6 +166,7 @@ export default function Editor() {
         setSelected(m.id);
         setTab("layers");
       }
+      if (m.type === "delete") removeNode(m.id);
       if (m.type === "move") {
         change((d) => {
           const added = d.additions.find((n) => n.id === m.id);
@@ -1412,19 +1429,7 @@ export default function Editor() {
                 </button>
                 <button
                   className="ed-danger"
-                  onClick={() => {
-                    change((d) => {
-                      if (selected.startsWith("custom_"))
-                        d.additions = d.additions.filter(
-                          (n) => n.id !== selected,
-                        );
-                      else {
-                        d.nodes[selected] ??= { style: {} };
-                        d.nodes[selected].hidden = true;
-                      }
-                    });
-                    setSelected(null);
-                  }}
+                  onClick={() => removeNode(selected)}
                 >
                   Xóa thành phần
                 </button>

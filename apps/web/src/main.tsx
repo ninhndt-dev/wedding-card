@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AdminPage from "./features/admin/AdminPage";
+import InvitationsPage from "./features/admin/InvitationsPage";
 import EditorPage from "./features/editor/EditorPage";
 import PreviewPage from "./features/preview/PreviewPage";
 import "./globals.css";
@@ -15,6 +16,7 @@ createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <Routes>
       <Route path="/admin" element={<AdminPage />} />
+      <Route path="/admin/invitations" element={<InvitationsPage />} />
       <Route path="/admin/editor" element={<EditorPage />} />
       <Route path="/admin/preview" element={<PreviewPage />} />
       <Route path="/" element={<Invitation />} />

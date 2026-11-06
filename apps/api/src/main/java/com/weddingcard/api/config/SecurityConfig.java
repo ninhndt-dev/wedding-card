@@ -36,7 +36,7 @@ public class SecurityConfig {
               reject(res, 403, "Nguồn gửi không hợp lệ.");
               return;
             }
-            if (path.startsWith("/api/editor") || (path.equals("/api/admin") && !write)) {
+            if (path.startsWith("/api/editor") || path.startsWith("/api/invitations") || (path.equals("/api/admin") && !write)) {
               if (!auth.authenticated(req)) {
                 reject(res, 401, "Vui lòng đăng nhập quản trị.");
                 return;
@@ -46,7 +46,7 @@ public class SecurityConfig {
                 && path.startsWith("/api/")
                 && req.getContentType() != null
                 && req.getContentType().contains("application/json")) {
-              int limit = path.startsWith("/api/editor") ? 1048576 : 16384;
+              int limit = path.startsWith("/api/editor") || path.startsWith("/api/invitations") ? 1048576 : 16384;
               byte[] body = req.getInputStream().readNBytes(limit + 1);
               if (body.length > limit) {
                 reject(res, 413, "Nội dung quá dài.");

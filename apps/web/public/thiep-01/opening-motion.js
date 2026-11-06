@@ -1,7 +1,7 @@
 (function(){
  const cover=document.getElementById('miuOpening'),stage=document.getElementById('miuOpeningSides');if(!cover||!stage)return;
  const preview=new URLSearchParams(location.search).has('editorPreview')&&window.parent!==window;
- const root=document.documentElement,body=document.body,left=stage.querySelector('.card-side.left'),right=stage.querySelector('.card-side.right');
+ const root=document.documentElement,body=document.body;
  const buttons=[document.getElementById('miuOpeningBtn'),document.getElementById('miuOpeningCtaBtn')].filter(Boolean);
  let running=false,closed=false,willCloseSent=false,timer=null,leadTimer=null,animations=[];
  const event=name=>window.dispatchEvent(new Event('miu:opening:'+name));
@@ -11,8 +11,7 @@
  cover.style.display='none';cover.dataset.open='0';cover.dataset.motion='closed';cover.setAttribute('aria-hidden','true');cover.setAttribute('aria-busy','false');cover.inert=true;
  delete root.dataset.editorOpening;root.style.overflow='';body.style.overflow='';
  for(const animation of animations)animation.cancel();animations=[];
- for(const panel of [left,right])if(panel){panel.style.removeProperty('clip-path');panel.style.removeProperty('will-change')}
- stage.style.removeProperty('will-change');buttons.forEach(b=>{b.disabled=false;b.setAttribute('aria-expanded','true')});
+ buttons.forEach(b=>{b.disabled=false;b.setAttribute('aria-expanded','true')});
  if(focusInside&&!preview){const main=document.querySelector('.miu-stage');if(main){main.setAttribute('tabindex','-1');main.focus({preventScroll:true})}}
  event('closed');
  }
@@ -21,19 +20,24 @@
  running=true;closed=false;willCloseSent=false;cover.dataset.motion='opening';cover.setAttribute('aria-busy','true');buttons.forEach(b=>b.disabled=true);
  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
  if(reduced||!stage.animate){reveal();if(stage.animate){animate(stage,[{opacity:1},{opacity:0}],{duration:140,easing:'linear'}).then(finish);timer=setTimeout(finish,220)}else finish();return;}
- // Use a fixed clipping line through the seal, so the two duplicate artwork
- // layers become two paper halves instead of two whole envelopes moving apart.
- const seal=left?.querySelector('.miu-env-nutthiep'),sealRect=seal?.getBoundingClientRect(),rect=stage.getBoundingClientRect();
- const split=Math.max(rect.height*.25,Math.min(rect.height*.8,sealRect?sealRect.top+sealRect.height/2-rect.top:rect.height*.5));
- if(left)left.style.clipPath='inset(0 0 '+Math.max(0,rect.height-split)+'px 0)';if(right)right.style.clipPath='inset('+split+'px 0 0 0)';
- const distance=Math.min(280,rect.height*.32),ease='cubic-bezier(.32,0,.16,1)';
+ // Let the flowers and seal clear the envelope before flipping its top flap.
+ const flowersLeft=stage.querySelectorAll('.card-side.left .miu-env-flower-left');
+ const flowersRight=stage.querySelectorAll('.card-side.left .miu-env-flower-right');
+ const seal=stage.querySelector('.card-side.left .miu-env-nutthiep');
+ const flap=stage.querySelector('.card-side.left .miu-env-flap');
+ const letter=stage.querySelector('.card-side.left .miu-env-letter');
+ const hint=stage.querySelector('.card-side.left .miu-env-click-btn');
  const work=[
- animate(left,[{transform:'translate3d(0,0,0)',opacity:1},{transform:'translate3d(0,'+(-distance)+'px,0)',opacity:0}],{duration:1100,easing:ease}),
- animate(right,[{transform:'translate3d(0,0,0)',opacity:1},{transform:'translate3d(0,'+distance+'px,0)',opacity:0}],{duration:1100,delay:60,easing:ease}),
- animate(cover,[{opacity:1,offset:0},{opacity:1,offset:.25},{opacity:0,offset:1}],{duration:1160,easing:'linear'})
+ ...[...flowersLeft].map(flower=>animate(flower,[{translate:'0 0',opacity:1},{translate:'-130px -12px',opacity:0}],{duration:650,easing:'cubic-bezier(.22,.61,.36,1)'})),
+ ...[...flowersRight].map(flower=>animate(flower,[{translate:'0 0',opacity:1},{translate:'130px 12px',opacity:0}],{duration:650,easing:'cubic-bezier(.22,.61,.36,1)'})),
+ animate(seal,[{translate:'0 0',scale:'1',opacity:1},{translate:'0 75px',scale:'.95',opacity:1,offset:.55},{translate:'0 150px',scale:'.78',opacity:0}],{duration:650,delay:300,easing:'ease-in'}),
+ animate(flap,[{transform:'rotateX(0deg)'},{transform:'rotateX(168deg)'}],{duration:650,delay:980,easing:'cubic-bezier(.25,.8,.25,1)'}),
+ animate(letter,[{translate:'0 12px'},{translate:'0 -38px'}],{duration:500,delay:1130,easing:'cubic-bezier(.22,.61,.36,1)'}),
+ animate(stage,[{opacity:1},{opacity:0}],{duration:800,delay:1580,easing:'ease-in-out'}),
+ animate(cover,[{opacity:1},{opacity:0}],{duration:850,delay:1600,easing:'ease-in-out'})
  ];
- for(const hint of stage.querySelectorAll('.miu-env-click-btn,.miu-env-nutthiep'))animate(hint,[{opacity:1},{opacity:0}],{duration:220,easing:'ease-out'});
- leadTimer=setTimeout(reveal,240);timer=setTimeout(finish,1400);Promise.all(work).then(finish);
+ animate(hint,[{opacity:1},{opacity:0}],{duration:180,easing:'ease-out'});
+ leadTimer=setTimeout(reveal,1600);timer=setTimeout(finish,2600);Promise.all(work).then(finish);
  }
  cover.addEventListener('click',()=>{if(!preview)play()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&running)finish()});

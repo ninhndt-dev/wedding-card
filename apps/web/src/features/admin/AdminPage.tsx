@@ -103,6 +103,7 @@ export default function Admin() {
           NGÀY CHUNG ĐÔI ✧
         </a>
         <a href="/admin/editor">Chỉnh sửa thiệp</a>
+        <a href="/admin/invitations">Danh sách thiệp khách mời</a>
         <a href="/thiep-01/index.html" target="_blank" rel="noreferrer">
           Xem thiệp ↗
         </a>
