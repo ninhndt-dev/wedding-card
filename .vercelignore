@@ -1,7 +1,7 @@
 .env*
 infra/.env
 .local
-data
+/data/
 node_modules
 apps/web/dist
 apps/api/target
