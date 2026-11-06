@@ -1,0 +1,16 @@
+node_modules/
+.next/
+.env*
+!.env.example
+data/*
+!data/.gitkeep
+*.log
+
+.local/
+
+# Local tooling, unused hosting metadata and captured reference pages
+.DS_Store
+.openai/
+dist/
+templates/thiep-01/reference/
+*.tsbuildinfo

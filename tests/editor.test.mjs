@@ -1,0 +1,13 @@
+import test,{after} from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {validateDocument,assetUrl,EditorError} from '../lib/editor-schema.js';
+import {fileType} from '../lib/media.js';
+const dir=mkdtempSync(join(tmpdir(),'wedding-editor-'));process.env.DATABASE_PATH=join(dir,'test.sqlite');
+const {initialDocument,editorState,publishedDocument,manifest}=await import('../lib/editor.js');const {default:db}=await import('../lib/db.js');
+after(()=>{db.close();rmSync(dir,{recursive:true,force:true})});
+test('editor starts with all original nodes, forms, two events and album',()=>{const d=initialDocument();const clean=validateDocument(d,manifest.nodes.map(n=>n.id));assert.equal(clean.settings.groom,'Tấn Ninh');assert.ok(manifest.nodes.length>=95);assert.ok(clean.album.length>=8);assert.equal(clean.forms.rsvp.events.length,3);assert.equal(editorState().revision,0);assert.equal(publishedDocument(),null)});
+test('editor rejects executable URLs, unsafe styles and unknown nodes',()=>{for(const url of ['javascript:alert(1)','data:text/html,hi','//evil.example/a','/../secrets','/assets/%2e%2e/secret','https://user:pass@example.com/a'])assert.throws(()=>assetUrl(url),EditorError);assert.equal(assetUrl('/media/abc.png'),'/media/abc.png');assert.equal(assetUrl('https://example.com/a.png'),'https://example.com/a.png');const ids=manifest.nodes.map(n=>n.id);for(const update of [d=>d.nodes.fake={text:'bad'},d=>d.nodes[ids[0]]={style:{backgroundImage:'url(https://evil.example)'}},d=>d.nodes[ids[0]]={src:'javascript:alert(1)'},d=>d.theme.canvasHeight=999,d=>d.forms.rsvp.events=[''],d=>d.settings.date='invalid',d=>d.theme.primary='red;anything']){const d=initialDocument();update(d);assert.throws(()=>validateDocument(d,ids),EditorError)}});
+test('media validation inspects file signatures rather than extension',()=>{assert.equal(fileType(Buffer.from('<svg onload="alert(1)">')),null);assert.equal(fileType(Buffer.from('<html>bad</html>')),null);assert.equal(fileType(Buffer.from([137,80,78,71,13,10,26,10,0])).mime,'image/png');assert.equal(fileType(Buffer.from('ID3demo')).mime,'audio/mpeg');assert.equal(fileType(Buffer.from('wOF2demo')).mime,'font/woff2')});

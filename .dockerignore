@@ -1,0 +1,11 @@
+node_modules
+.next
+.env*
+data
+.git
+.openai
+
+.local
+templates/thiep-01/reference
+.DS_Store
+dist

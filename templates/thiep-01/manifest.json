@@ -1,0 +1,16 @@
+{
+  "id": "thiep-01",
+  "name": "Thiệp 01",
+  "reference": "https://chungdoi.com/vi/mau-thiep/minimalism-do-dam/demo?open=1",
+  "status": "reference-captured-implementation-incomplete",
+  "implementation": "../../app/invitation.js",
+  "style": "../../app/style.css",
+  "verified_pixel_match": false,
+  "reference_capture": {
+    "directory": "reference",
+    "assets": 80,
+    "desktop": true,
+    "mobile": true,
+    "interactions": "reference/interactions.json"
+  }
+}
