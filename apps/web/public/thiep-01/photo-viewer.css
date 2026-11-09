@@ -1,0 +1,23 @@
+.miu-canvas img[data-photo-view="1"]{cursor:zoom-in}
+.miu-canvas img[data-photo-view="1"]:focus-visible{outline:3px solid #fff;outline-offset:3px}
+#weddingPhotoViewer{box-sizing:border-box;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;border:0;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:rgba(8,11,10,.98);color:#fff;font:14px/1.5 Arial,sans-serif;overflow:hidden}
+#weddingPhotoViewer[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:8px}
+#weddingPhotoViewer::backdrop{background:#000c}
+#weddingPhotoViewer [hidden]{display:none!important}
+#weddingPhotoViewer .photo-toolbar{display:flex;align-items:center;gap:10px;min-height:40px}
+#weddingPhotoViewer [data-photo-count]{flex:1;white-space:nowrap}
+#weddingPhotoViewer button,#weddingPhotoViewer a{color:#fff;border:1px solid #ffffff40;background:#ffffff14;border-radius:8px;padding:8px 12px;font:inherit;text-decoration:none;cursor:pointer;white-space:nowrap;box-sizing:border-box;min-height:40px}
+#weddingPhotoViewer button:focus-visible,#weddingPhotoViewer a:focus-visible{outline:2px solid #fff;outline-offset:3px}
+#weddingPhotoViewer [data-photo-close]{font-size:28px;line-height:1;padding:5px 12px}
+#weddingPhotoViewer .photo-main{position:relative;min-height:0}
+#weddingPhotoViewer .photo-viewport{height:100%;overflow:auto;overscroll-behavior:contain;touch-action:pan-y}
+#weddingPhotoViewer .photo-stage{display:flex;min-width:100%;min-height:100%;width:max-content}
+#weddingPhotoViewer .photo-image{display:block;margin:auto;width:auto;height:auto;max-width:calc(100vw - 24px);max-height:calc(100dvh - 150px);object-fit:contain;cursor:zoom-in;user-select:none;-webkit-user-drag:none}
+#weddingPhotoViewer.is-zoomed .photo-image{max-width:none;max-height:none;cursor:zoom-out}
+#weddingPhotoViewer.is-zoomed .photo-viewport{touch-action:pan-x pan-y}
+#weddingPhotoViewer .photo-nav{position:absolute;top:50%;transform:translateY(-50%);border-radius:50%;width:44px;height:44px;font-size:32px;line-height:1;padding:0;background:#0009}
+#weddingPhotoViewer .photo-prev{left:4px}
+#weddingPhotoViewer .photo-next{right:4px}
+#weddingPhotoViewer .photo-footer{text-align:center;min-width:0}
+#weddingPhotoViewer .photo-footer p{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#weddingPhotoViewer .photo-footer small{color:#c2c9c4;font-size:12px}
