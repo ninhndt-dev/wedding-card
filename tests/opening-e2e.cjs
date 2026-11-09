@@ -58,13 +58,39 @@ const fs = require("fs");
           await page.locator("#miuOpening").getAttribute("data-motion"),
           "opening",
         );
+        const split = await page.evaluate(() => {
+          const top = document.querySelector(
+            "#miuOpeningSides .card-side.left",
+          );
+          const bottom = document.querySelector(
+            "#miuOpeningSides .card-side.right",
+          );
+          return {
+            topY: new DOMMatrix(getComputedStyle(top).transform).m42,
+            bottomY: new DOMMatrix(getComputedStyle(bottom).transform).m42,
+            coverOpacity: getComputedStyle(
+              document.getElementById("miuOpening"),
+            ).opacity,
+            duration: top.getAnimations()[0].effect.getTiming().duration,
+            easing: top.getAnimations()[0].effect.getTiming().easing,
+            envelopes: document.querySelectorAll(
+              "#miuOpeningSides .miu-env-envelope",
+            ).length,
+          };
+        });
+        assert.ok(split.topY < 0);
+        assert.ok(split.bottomY > 0);
+        assert.equal(split.coverOpacity, "1");
+        assert.equal(split.duration, 1000);
+        assert.equal(split.easing, "cubic-bezier(0.22, 0.61, 0.36, 1)");
+        assert.equal(split.envelopes, 2);
         await page.screenshot({
           path: ".local/opening-" + name + "-motion.png",
         });
       }
       await page
         .locator("#miuOpening")
-        .waitFor({ state: "hidden", timeout: 3500 });
+        .waitFor({ state: "hidden", timeout: 2000 });
       const result = await page.evaluate(() => ({
         ...window.__motion,
         overflow: document.documentElement.style.overflow,
@@ -78,10 +104,10 @@ const fs = require("fs");
       assert.notEqual(result.bodyOverflow, "hidden");
       assert.equal(result.aria, "true");
       assert.ok(
-        elapsed < (name === "reduced-motion" ? 600 : 3200),
+        elapsed < (name === "reduced-motion" ? 600 : 1500),
         String(elapsed),
       );
-      if (name !== "reduced-motion") assert.ok(elapsed > 2100, String(elapsed));
+      if (name !== "reduced-motion") assert.ok(elapsed > 900, String(elapsed));
       const after = await page.locator(".miu-stage").boundingBox();
       assert.ok(
         Math.abs(before.x - after.x) < 1,

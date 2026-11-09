@@ -90,7 +90,11 @@ try {
     ready(testEnv.E2E_ORIGIN + "/api/health"),
     ready(testEnv.E2E_ORIGIN + "/admin"),
   ]);
-  for (const file of ["tests/spring-e2e.cjs", "tests/opening-e2e.cjs"]) {
+  for (const file of [
+    "tests/spring-e2e.cjs",
+    "tests/opening-e2e.cjs",
+    "tests/reveal-e2e.cjs",
+  ]) {
     const code = await new Promise((resolve) => {
       const child = spawn("node", [file], {
         cwd: root,

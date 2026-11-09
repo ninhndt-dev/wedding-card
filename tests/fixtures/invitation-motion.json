@@ -1,0 +1,655 @@
+[
+  {
+    "data-node-id": "element_text_5drkesyzj2q",
+    "data-anim-preset": "bounceIn",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "150"
+  },
+  {
+    "data-node-id": "element_text_1sgz63palk1",
+    "data-anim-preset": "bounceInUp",
+    "data-anim-duration": "600",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_image_cp2ifiqq6p5",
+    "data-anim-preset": "rotateInDownLeft",
+    "data-anim-duration": "800",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_8v6aahyrjca",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_tmrq54dtaxd",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_4k184no8ujs",
+    "data-anim-preset": "fadeInLeft",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_2prpu9qb88k",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_image_uowcu8ia0qk",
+    "data-anim-preset": "rotateInDownRight",
+    "data-anim-duration": "800",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_a8sem1kayyv",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_tirdakhayyv",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_9ifew76biqh",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_z0nfldx2nbp",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_e3pbz0i593p",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "2900",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_4ffn52f5b4i",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_shape_mx0egdwrbp5",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_fo8she9s3hy",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "1000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_calendar_5zjnlsxup6d",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_dxprjxa0off",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_06ac4q53k8i",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_d9l0um64u0y",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_7izh3ni5mms",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_button_ndhn6x96u8i",
+    "data-anim-preset": "heartBeat",
+    "data-anim-duration": "2100",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "1"
+  },
+  {
+    "data-node-id": "element_shape_87i0umd84o3",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_fdmxouq84o3",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_calendar_3or7w9v84o3",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_kmldvzj84o3",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_2f0sjot84o3",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_s1sbwje84o3",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_di57kh584o3",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_button_elmr9pb84o3",
+    "data-anim-preset": "heartBeat",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_image_s613twtlfcd",
+    "data-anim-preset": "flipInX",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_wxumbellfcd",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_0qtpfqllfce",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_2kfp3y1lfce",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_lcmidurlfce",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_calendar_rjejexalfce",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-anim-preset": "heartBeat",
+    "data-anim-duration": "1200",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "1"
+  },
+  {
+    "data-node-id": "element_text_5dfcj18lfce",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_countdown_f6e4xkvlfce",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_gmheghblfce",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_image_4ogg5j9lfce",
+    "data-anim-preset": "fadeInLeft",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_image_4uf6numlfce",
+    "data-anim-preset": "fadeInLeft",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_image_mamkjollfce",
+    "data-anim-preset": "fadeInLeft",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_image_xws1r3xlfce",
+    "data-anim-preset": "fadeInLeft",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_6iufnczlfce",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_u7umjwqlfcf",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_nzbrqx5lfcf",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_j9b6vcflfcf",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_ul7y35wlfcf",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_1gukanylfcf",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_wdu5h3flfcf",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_7rk3plqlfcf",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_g4wyridlfcf",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_image_sl7w5g2lfcf",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_album_wnivt5llfcf",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-anim-preset": "fadeInLeft",
+    "data-anim-duration": "1600",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-anim-preset": "fadeInLeft",
+    "data-anim-duration": "1600",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "1600",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "1600",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-anim-preset": "fadeInLeft",
+    "data-anim-duration": "1600",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-anim-preset": "fadeInLeft",
+    "data-anim-duration": "1600",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "1600",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "1600",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_5dc9x5olfcf",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_button_v3c588flfcf",
+    "data-anim-preset": "heartBeat",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "1"
+  },
+  {
+    "data-node-id": "element_button_1moo17plfcg",
+    "data-anim-preset": "heartBeat",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "1"
+  },
+  {
+    "data-node-id": "element_image_o4oxi2kpddq",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_u1jowujpddq",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_cebfwmhxj05",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "1000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_ea5tuau0re9",
+    "data-anim-preset": "pop",
+    "data-anim-duration": "600",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2,0.8,0.2,1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_exg70z1ql0s",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_sk4r8u6s7ly",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_wishes_lnj042gn7cr",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_rsvp_3zj5104pozj",
+    "data-anim-preset": "fadeIn",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_0fvxtor520c",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_00csedp520c",
+    "data-anim-preset": "fadeInDown",
+    "data-anim-duration": "3000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0"
+  },
+  {
+    "data-node-id": "element_text_pbbrmyuvvr6",
+    "data-anim-preset": "fadeInLeft",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_rudjs5mvvr6",
+    "data-anim-preset": "fadeInLeft",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_yhbrz9wvvr6",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  },
+  {
+    "data-node-id": "element_text_372cz3lvvr6",
+    "data-anim-preset": "fadeInRight",
+    "data-anim-duration": "2000",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "0",
+    "data-anim-distance": "200"
+  }
+]
