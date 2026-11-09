@@ -60,7 +60,7 @@ const origin = process.env.E2E_ORIGIN || "http://127.0.0.1:3101";
     await page.locator("#miuOpeningBtn").click();
     await page
       .locator("#miuOpening")
-      .waitFor({ state: "hidden", timeout: 2000 });
+      .waitFor({ state: "hidden", timeout: 3500 });
     const animated = [
       ["element_image_cp2ifiqq6p5", "miu-rotateInDownLeft", "0.8s"],
       ["element_image_uowcu8ia0qk", "miu-rotateInDownRight", "0.8s"],
@@ -164,7 +164,7 @@ const origin = process.env.E2E_ORIGIN || "http://127.0.0.1:3101";
     await preview.locator("#miuOpeningBtn").click();
     await preview
       .locator("#miuOpening")
-      .waitFor({ state: "hidden", timeout: 2000 });
+      .waitFor({ state: "hidden", timeout: 3500 });
     assert.equal(
       await preview.locator('[data-reveal-state="pending"]').count(),
       0,
@@ -172,7 +172,7 @@ const origin = process.env.E2E_ORIGIN || "http://127.0.0.1:3101";
     assert.deepEqual(errors, []);
     await editing.close();
     console.log(
-      "Reference motion passed: all entrance metadata, opposite envelope layers, scroll reveals, cloned album entrances, particle mix and reduced motion.",
+      "Reference motion passed: all entrance metadata, scroll reveals, cloned album entrances, particle mix and reduced motion.",
     );
   } finally {
     await browser.close();

@@ -1,0 +1,5 @@
+.miu-canvas [data-reveal-state="pending"]{opacity:0!important;animation:none!important}
+@media(prefers-reduced-motion:reduce){
+ .snowflake,.miu-canvas [data-anim-preset]{animation:none!important}
+ .snowflakes{display:none!important}
+}
