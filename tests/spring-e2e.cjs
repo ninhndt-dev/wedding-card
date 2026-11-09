@@ -59,6 +59,58 @@ if (
       (await db.query("SELECT COUNT(*) n FROM admin_sessions"))[0][0].n,
       1,
     );
+    const originalAlbum = structuredClone(s.document.album);
+    const preview = page.frameLocator(
+      'iframe[title="Xem trước thiệp đang chỉnh"]',
+    );
+    await preview
+      .locator('[data-node-id="element_album_wnivt5llfcf"]')
+      .click({ position: { x: 10, y: 10 } });
+    const albumPanel = page.locator(".ed-inspector .ed-album-photos");
+    await albumPanel.getByLabel("Ảnh album 1", { exact: true }).waitFor();
+    const uploadedAlbum = [];
+    for (let i = 0; i < 2; i++) {
+      const uploadResponse = page.waitForResponse(
+        (response) =>
+          response.url() === origin + "/api/editor/assets" &&
+          response.request().method() === "POST",
+      );
+      await albumPanel
+        .locator('input[type="file"]')
+        .nth(i)
+        .setInputFiles(path.resolve("apps/web/public/thiep-01/icon-tl1.png"));
+      const response = await uploadResponse;
+      assert.equal(response.status(), 201, await response.text());
+      const asset = (await response.json()).asset;
+      uploadedAlbum.push(asset.url);
+      await preview
+        .locator('[data-miu-album-item] img[src="' + asset.url + '"]')
+        .waitFor();
+    }
+    await albumPanel
+      .getByLabel("Chú thích ảnh 1", { exact: true })
+      .fill("Ảnh đầu đã thay");
+    const saveAlbum = page.waitForResponse(
+      (response) =>
+        response.url() === origin + "/api/editor" &&
+        response.request().method() === "POST",
+    );
+    await page
+      .getByRole("button", { name: "Lưu bản nháp", exact: true })
+      .click();
+    assert.equal((await saveAlbum).status(), 200);
+    const savedAlbum = (await state()).document.album;
+    assert.equal(savedAlbum[0].src, uploadedAlbum[0]);
+    assert.equal(savedAlbum[1].src, uploadedAlbum[1]);
+    assert.equal(savedAlbum[0].caption, "Ảnh đầu đã thay");
+    assert.deepEqual(savedAlbum.slice(2), originalAlbum.slice(2));
+    await page.reload();
+    await page
+      .getByRole("button", { name: "Áp dụng lên thiệp", exact: true })
+      .waitFor();
+    checks.push(
+      "Chọn album trên thiệp, upload riêng hai ảnh, preview và lưu lại đúng từng ảnh; giữ nguyên các ảnh khác",
+    );
     await page.getByRole("button", { name: "Cài đặt", exact: true }).click();
     await page
       .getByRole("button", { name: "Thông tin đôi bạn", exact: true })

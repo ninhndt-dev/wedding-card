@@ -26,10 +26,16 @@ const db = await mysql.createConnection({
   database: "wedding_card_test",
 });
 // Only the dedicated test database is reset; production wedding_card is never modified.
-for (const [table] of (await db.query("SHOW TABLES"))[0].map((row) =>
-  Object.values(row),
-))
-  await db.query("DROP TABLE `" + table + "`");
+try {
+  await db.query("SET FOREIGN_KEY_CHECKS=0");
+  for (const [table] of (await db.query("SHOW TABLES"))[0].map((row) =>
+    Object.values(row),
+  )) {
+    await db.query("DROP TABLE `" + table + "`");
+  }
+} finally {
+  await db.query("SET FOREIGN_KEY_CHECKS=1");
+}
 await db.end();
 mkdirSync(root + ".local", { recursive: true });
 const build = spawnSync("mvn", ["-q", "-f", "apps/api/pom.xml", "package"], {

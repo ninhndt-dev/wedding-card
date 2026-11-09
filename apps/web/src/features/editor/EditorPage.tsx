@@ -1,3 +1,4 @@
+import { AlbumEditor } from "./AlbumEditor";
 import type { WeddingDocument, EditorState } from "../../lib/types";
 
 import { useEffect, useRef, useState } from "react";
@@ -123,10 +124,10 @@ export default function Editor() {
     const document = current.current;
     if (!document || !id) return;
     const custom = document.additions.some((node) => node.id === id);
-    if (!custom && !meta?.manifest.nodes.some((node) => node.id === id))
-      return;
+    if (!custom && !meta?.manifest.nodes.some((node) => node.id === id)) return;
     change((draft) => {
-      if (custom) draft.additions = draft.additions.filter((node) => node.id !== id);
+      if (custom)
+        draft.additions = draft.additions.filter((node) => node.id !== id);
       else {
         draft.nodes[id] ??= { style: {} };
         draft.nodes[id].hidden = true;
@@ -423,6 +424,8 @@ export default function Editor() {
       .map((n) => ({
         id: n.id,
         filename: n.src.split("/").pop(),
+        original_name: n.src.split("/").pop(),
+        bytes: 0,
         url: asUrl(n.src),
         mime: "image/original",
       })),
@@ -872,80 +875,12 @@ export default function Editor() {
                   Đổi ảnh, chú thích, thứ tự hoặc thêm ảnh. Ảnh lớn sẽ mở trong
                   album của khách.
                 </p>
-                {doc.album.map((photo, i) => (
-                  <section key={i} className="ed-card">
-                    <div className="ed-heading">
-                      <h3>Ảnh {i + 1}</h3>
-                      <div>
-                        <button
-                          aria-label={"Đưa ảnh " + (i + 1) + " lên"}
-                          disabled={!i}
-                          onClick={() =>
-                            change((d) => {
-                              [d.album[i - 1], d.album[i]] = [
-                                d.album[i],
-                                d.album[i - 1],
-                              ];
-                            })
-                          }
-                        >
-                          ↑
-                        </button>
-                        <button
-                          aria-label={"Đưa ảnh " + (i + 1) + " xuống"}
-                          disabled={i === doc.album.length - 1}
-                          onClick={() =>
-                            change((d) => {
-                              [d.album[i], d.album[i + 1]] = [
-                                d.album[i + 1],
-                                d.album[i],
-                              ];
-                            })
-                          }
-                        >
-                          ↓
-                        </button>
-                        <button
-                          aria-label={"Xóa ảnh " + (i + 1)}
-                          onClick={() => change((d) => d.album.splice(i, 1))}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </div>
-                    <Media
-                      label={"Ảnh album " + (i + 1)}
-                      value={photo.src}
-                      onChange={(v) =>
-                        change((d) => {
-                          d.album[i].src = v;
-                        })
-                      }
-                      {...mediaProps}
-                    />
-                    <Field
-                      label={"Chú thích ảnh " + (i + 1)}
-                      value={photo.caption}
-                      onChange={(v) =>
-                        change((d) => {
-                          d.album[i].caption = v;
-                        })
-                      }
-                    />
-                  </section>
-                ))}
-                <button
-                  onClick={() =>
-                    change((d) =>
-                      d.album.push({
-                        src: "/thiep-01/1793892037600-HIU_7932.webp",
-                        caption: "",
-                      }),
-                    )
-                  }
-                >
-                  + Thêm ảnh album
-                </button>
+                <AlbumEditor
+                  photos={doc.album}
+                  change={change}
+                  busy={busy}
+                  {...mediaProps}
+                />
               </>
             )}
             {tab === "forms" && (
@@ -1233,6 +1168,21 @@ export default function Editor() {
                   value={value.href}
                   onChange={(v) => patch({ href: v })}
                 />
+              )}
+              {value.type === "album" && !selected.startsWith("custom_") && (
+                <>
+                  <p className="ed-help">
+                    Tải ảnh thay thế hoặc chọn từ thư viện cho từng ảnh bên
+                    dưới. Bấm Lưu bản nháp hoặc Áp dụng lên thiệp để lưu thay
+                    đổi.
+                  </p>
+                  <AlbumEditor
+                    photos={doc.album}
+                    change={change}
+                    busy={busy}
+                    {...mediaProps}
+                  />
+                </>
               )}
               {selected.startsWith("custom_") && (
                 <WidgetProperties

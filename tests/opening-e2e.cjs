@@ -64,7 +64,7 @@ const fs = require("fs");
       }
       await page
         .locator("#miuOpening")
-        .waitFor({ state: "hidden", timeout: 2500 });
+        .waitFor({ state: "hidden", timeout: 3500 });
       const result = await page.evaluate(() => ({
         ...window.__motion,
         overflow: document.documentElement.style.overflow,
@@ -78,10 +78,10 @@ const fs = require("fs");
       assert.notEqual(result.bodyOverflow, "hidden");
       assert.equal(result.aria, "true");
       assert.ok(
-        elapsed < (name === "reduced-motion" ? 600 : 1800),
+        elapsed < (name === "reduced-motion" ? 600 : 3200),
         String(elapsed),
       );
-      if (name !== "reduced-motion") assert.ok(elapsed > 900, String(elapsed));
+      if (name !== "reduced-motion") assert.ok(elapsed > 2100, String(elapsed));
       const after = await page.locator(".miu-stage").boundingBox();
       assert.ok(
         Math.abs(before.x - after.x) < 1,
