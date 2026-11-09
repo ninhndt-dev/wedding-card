@@ -36,8 +36,13 @@ public class GuestRepository {
                         + " WHERE payload_hash=? AND created>DATE_SUB(CURRENT_TIMESTAMP,INTERVAL 1"
                         + " MINUTE)",
                     hash)
-                != null)
+                != null) {
+              // Another request may commit this same key between the two reads.
+              var committed =
+                  sql.one("SELECT id,payload_hash FROM " + table + " WHERE submission_key=?", key);
+              if (committed != null) return existing(committed, hash);
               throw new ApiError(429, "Phản hồi này vừa được lưu. Vui lòng chờ một phút.");
+            }
             sql.update(insert, args);
             return Map.of("ok", true, "id", sql.id(), "created", true);
           });

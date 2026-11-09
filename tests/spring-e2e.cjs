@@ -201,11 +201,12 @@ if (
       message: "Lời nhắn riêng",
       submissionId: "rsvp_test_123456789",
     };
-    const parallel = await Promise.all([
-      post("/api/rsvp", data),
-      post("/api/rsvp", data),
-    ]);
-    assert.deepEqual(parallel.map((x) => x.status()).sort(), [200, 201]);
+    const parallel = await Promise.all(
+      Array.from({ length: 8 }, () => post("/api/rsvp", data)),
+    );
+    const statuses = parallel.map((response) => response.status());
+    assert.equal(statuses.filter((status) => status === 201).length, 1);
+    assert.equal(statuses.filter((status) => status === 200).length, 7);
     assert.equal(
       (
         await db.query("SELECT COUNT(*) n FROM guests WHERE submission_key=?", [
