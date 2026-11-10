@@ -202,6 +202,13 @@ const origin = process.env.E2E_ORIGIN || "http://127.0.0.1:3101";
       const gift = page.locator("#miuRuntimeModal"),
         qr = gift.locator('img[src="' + uploadedSrc + '"]');
       await qr.waitFor({ state: "visible" });
+      await gift
+        .getByText(
+          "Sự hiện diện của bạn là món quà quý giá nhất với chúng mình.",
+          { exact: true },
+        )
+        .waitFor();
+
       await qr.evaluate((img) => img.decode());
       await page.evaluate(
         () =>
