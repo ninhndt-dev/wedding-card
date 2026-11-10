@@ -120,6 +120,12 @@ const origin = process.env.E2E_ORIGIN || "http://127.0.0.1:3101";
     assert.ok(uploaded);
     const uploadedSrc = uploaded.url || "/media/" + uploaded.filename;
     const updated = structuredClone(current.published);
+    for (const side of ["groom", "bride"])
+      updated.gifts[side] = {
+        ...updated.gifts[side],
+        enabled: true,
+        qr: uploadedSrc,
+      };
     updated.additions.push({
       id: "custom_uploaded_photo_1234",
       type: "image",
@@ -188,6 +194,53 @@ const origin = process.env.E2E_ORIGIN || "http://127.0.0.1:3101";
       "Added albums open the viewer rather than a separate browser tab",
     );
     await page.keyboard.press("Escape");
+    for (const id of [
+      "element_button_v3c588flfcf",
+      "element_button_1moo17plfcg",
+    ]) {
+      await page.locator('[data-node-id="' + id + '"]').click();
+      const gift = page.locator("#miuRuntimeModal"),
+        qr = gift.locator('img[src="' + uploadedSrc + '"]');
+      await qr.waitFor({ state: "visible" });
+      await qr.evaluate((img) => img.decode());
+      await page.evaluate(
+        () =>
+          new Promise((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve)),
+          ),
+      );
+      const box = await qr.evaluate((img) => {
+        const a = img.getBoundingClientRect(),
+          b = img.closest("[data-miu-scale]").getBoundingClientRect();
+        return {
+          top: a.top,
+          bottom: a.bottom,
+          clipTop: b.top,
+          clipBottom: b.bottom,
+          width: img.getAttribute("width"),
+          height: img.getAttribute("height"),
+          fit: getComputedStyle(img).objectFit,
+        };
+      });
+      assert.equal(box.width, "320");
+      assert.equal(box.height, "320");
+      assert.equal(box.fit, "contain");
+      assert.ok(
+        box.top >= box.clipTop - 1 && box.bottom <= box.clipBottom + 1,
+        "Gift QR must be fully visible without clipping",
+      );
+      await qr.click();
+      await viewer.waitFor();
+      await page.keyboard.press("Escape");
+      await viewer.waitFor({ state: "hidden" });
+      assert.equal(
+        await gift.isVisible(),
+        true,
+        "Closing the image viewer preserves the gift popup",
+      );
+      await gift.locator("[data-miu-modal-close]").click();
+      await gift.waitFor({ state: "hidden" });
+    }
     await page.goto(origin + "/admin/editor");
     await page
       .getByRole("button", { name: "Áp dụng lên thiệp", exact: true })
