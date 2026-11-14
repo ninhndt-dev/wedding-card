@@ -18,3 +18,6 @@ html{scrollbar-gutter:stable}
 html[data-cover-active] .miu-canvas,html[data-cover-active] .snowflakes{visibility:hidden}
 html[data-cover-active] .miu-canvas *,html[data-cover-active] .snowflake{animation-play-state:paused!important}
 #miuOpening[data-motion="opening"] .miu-env-flap,#miuOpening[data-motion="opening"] .miu-env-flower-left,#miuOpening[data-motion="opening"] .miu-env-flower-right{will-change:transform,opacity}
+/* Room for Vietnamese accents and the long strokes of the guest-name script. */
+#miuOpeningSides .miu-env-invite{line-height:1.4;min-height:1.7em;padding:.15em .2em;box-sizing:border-box;overflow:visible}
+.miu-canvas [data-node-id="element_text_sk4r8u6s7ly"]{height:auto!important;min-height:calc(1.3em + 12px);line-height:1.3!important;padding:6px 8px!important;margin-top:calc(-.1em - 6px);box-sizing:border-box;overflow:visible!important}
