@@ -695,11 +695,15 @@ export default function Editor() {
                   />
                 ))}
                 <Media
-                  label="Ảnh giới thiệu chú rể"
+                  label="Ảnh đại diện khi chia sẻ link"
                   value={doc.settings.photo}
                   onChange={(v) => setSetting("photo", v)}
                   {...mediaProps}
                 />
+                <p className="ed-help">
+                  Ảnh xem trước khi gửi link thiệp. Nếu để trống sẽ dùng ảnh đầu
+                  album. Bấm Áp dụng để cập nhật ảnh chia sẻ.
+                </p>
                 <h3>Hai gia đình</h3>
                 {[
                   ["element_text_rudjs5mvvr6", "Bố chú rể"],

@@ -8,10 +8,9 @@ export default defineConfig({
     port: 3100,
     strictPort: true,
     proxy: Object.fromEntries(
-      ["/api", "/media", "/i/"].map((path) => [
-        path,
-        { target: backend, changeOrigin: false },
-      ]),
+      ["/api", "/media", "/i/", "/thiep-01/index.html", "^/(?:\\?.*)?$"].map(
+        (path) => [path, { target: backend, changeOrigin: false }],
+      ),
     ),
   },
   preview: {
@@ -19,10 +18,9 @@ export default defineConfig({
     port: 3100,
     strictPort: true,
     proxy: Object.fromEntries(
-      ["/api", "/media", "/i/"].map((path) => [
-        path,
-        { target: backend, changeOrigin: false },
-      ]),
+      ["/api", "/media", "/i/", "/thiep-01/index.html", "^/(?:\\?.*)?$"].map(
+        (path) => [path, { target: backend, changeOrigin: false }],
+      ),
     ),
   },
 });

@@ -30,7 +30,7 @@
       img.src ||
       img.currentSrc;
     try {
-      const url = new URL(raw, location.href);
+      const url = new URL(raw, document.baseURI);
       return ["http:", "https:", "blob:"].includes(url.protocol) ||
         /^data:image\/(png|jpeg|webp|gif);/i.test(raw)
         ? url.href

@@ -571,6 +571,19 @@ if (
     const historyWithAsset = (
       await db.query("SELECT MAX(id) AS id FROM editor_versions")
     )[0][0].id;
+    const sharedPage = await ctx.request.get(
+      origin + "/i/" + s.document.site.slug,
+    );
+    assert.equal(sharedPage.status(), 200);
+    const sharedHtml = await sharedPage.text();
+    const sharedHead = sharedHtml.slice(0, sharedHtml.indexOf("</head>"));
+    assert.ok(
+      sharedHead.includes(
+        'property="og:image" content="' + origin + asset.url + '?preview=1440"',
+      ),
+    );
+    assert.ok(sharedHead.includes('name="twitter:image"'));
+    assert.ok(!sharedHead.includes("melipage.com"));
     s = await state();
     s.document.settings.photo = "/thiep-01/icon-tl1.png";
     r = await post("/api/editor", {
