@@ -60,19 +60,21 @@ Chạy riêng: `npm run db:up`, `npm run dev:api`, `npm run dev:web`. Dừng MyS
 
 Giữ mẫu thiệp 01 và hiệu ứng mở thiệp, chỉnh sửa nội dung/ảnh/nhạc/font, 27 loại thành phần, kéo thả, undo/redo, album, quà mừng và QR, nền/hiệu ứng, link cá nhân hóa khách mời, xem trước mobile/desktop. Bản nháp tách khỏi bản công khai; áp dụng tạo lịch sử; revision ngăn ghi đè giữa nhiều cửa sổ.
 
-RSVP lưu có/không dự, số khách, bên gia đình, sự kiện và lời nhắn riêng. Lời chúc chờ admin duyệt. Dashboard tìm/lọc, duyệt/ẩn, xóa, xuất CSV; thống kê lượt xem và biểu mẫu. Đăng ký/đặt hàng lưu MySQL; giá lấy từ cấu hình đã áp dụng. Chưa tích hợp thanh toán. QR quà mừng có thể thêm sau trong editor.
+RSVP xác nhận tham dự bằng nút bấm, giữ tên và số người tham dự; bên gia đình lấy theo thiệp, không yêu cầu chọn lễ hay nhập lời nhắn. Lời chúc chờ admin duyệt. Dashboard tìm/lọc, duyệt/ẩn, xóa, xuất CSV; thống kê lượt xem và biểu mẫu. Đăng ký/đặt hàng lưu MySQL; giá lấy từ cấu hình đã áp dụng. Chưa tích hợp thanh toán. QR quà mừng có thể thêm sau trong editor.
 
 Session admin là token ngẫu nhiên, chỉ lưu hash trong MySQL; cookie HttpOnly, SameSite Strict, 8 giờ. Kiểm tra Origin cho mọi API ghi. File được kiểm tra signature và dung lượng; giữ file đang được dùng trong nháp, bản công khai, lịch sử hoặc preset. Lời nhắn RSVP không xuất hiện ở API công khai.
 
 ## Thiệp riêng cho khách mời
 
-Đăng nhập quản trị rồi mở **Danh sách thiệp khách mời**. Tải file CSV hoặc Excel `.xlsx` có hàng tiêu đề và cột tên khách (ví dụ `Tên khách / đại diện gia đình`). Các cột tùy chọn gồm điện thoại, bên mời, sự kiện, số người được mời và ghi chú. Nếu tên trùng, dòng cuối trong file được dùng; nhập lại cùng tên giữ nguyên link đã tạo. Có thể thêm khách, sửa thông tin, sao chép link và xuất danh sách CSV.
+Đăng nhập quản trị rồi mở **Danh sách thiệp khách mời**. Tải file CSV hoặc Excel `.xlsx` có hàng tiêu đề và cột tên khách (ví dụ `Tên khách / đại diện gia đình`). Các cột tùy chọn gồm điện thoại, bên mời, sự kiện, số người được mời và ghi chú. Mỗi dòng tạo một thiệp riêng, kể cả trùng tên và trùng bên mời. Nhập thêm file sẽ thêm thiệp mới; dùng Xóa danh sách thiệp để làm lại từ đầu. Có thể thêm khách, sửa thông tin, sao chép link và xuất danh sách CSV.
 
 Mỗi link có mã riêng để gắn lượt xem, RSVP, lời chúc và biểu mẫu đăng ký/đặt hàng với đúng thiệp. Danh sách hiển thị phản hồi mới nhất và giữ lịch sử các lần gửi. Link `?guest=` cũ vẫn hoạt động nhưng không gắn phản hồi vào một thiệp riêng.
 
 Nếu đặt **Số người được mời** lớn hơn 0 cho một thiệp, biểu mẫu RSVP sẽ hiển thị giới hạn đó và API từ chối số người tham dự vượt giới hạn. Giá trị 0 nghĩa là chưa đặt giới hạn riêng.
 
 ## Kiểm tra
+
+Editor local và Docker Compose giữ nguyên file ảnh tải lên, không nén hoặc giảm kích thước; hỗ trợ ảnh tối đa 32 MiB. Giới hạn upload trên Vercel vẫn là 4 MiB theo cấu hình container bên dưới.
 
 ```sh
 npx playwright install chromium
@@ -116,3 +118,9 @@ docker compose --env-file .env.local -f infra/compose.yaml -f infra/compose.prod
 ```
 
 Đặt `APP_ORIGIN` thành URL HTTPS thật và `COOKIE_SECURE=true` khi đặt sau HTTPS reverse proxy. Thư mục upload và MySQL dùng volume bền vững; sao lưu cả hai. Bật TLS cho kết nối MySQL từ xa. Không đưa `.env`, export hoặc dữ liệu khách mời lên Git. Giới hạn đăng nhập hiện nằm trong bộ nhớ một API instance; triển khai nhiều instance cần rate limit chung tại proxy.
+
+### Bữa cơm thân mật và bên mời
+
+Trong editor, mục **Cài đặt → Lịch & sự kiện** cho chỉnh ngày bữa cơm, giờ và địa điểm riêng của nhà trai/nhà gái. Để trống địa điểm hoặc địa chỉ bữa cơm sẽ dùng thông tin lễ cưới của bên tương ứng. Bộ chọn **Thiệp nhà trai / Thiệp nhà gái** phía trên khung xem trước giúp kiểm tra hai cách hiển thị.
+
+File tải để import chỉ gồm hai cột, các thông tin khác bổ sung sau trong trang quản trị. Trong danh sách thiệp khách mời, nhập CSV/XLSX có cột **Tên khách** và **Bên mời** (`Nhà trai` hoặc `Nhà gái`); có nút **Tải CSV để import** (tải danh sách hiện tại để chỉnh sửa; nếu chưa có khách thì dùng dòng mẫu) và mẫu tại `docs/examples/khach-moi.csv`. Bên mời được lưu theo từng khách, không lấy từ tên khách hoặc từ một tham số công khai. Các dòng trùng tên được giữ riêng với link khác nhau. Muốn đổi thông tin một thiệp, dùng nút Sửa trên đúng dòng đó; muốn nhập lại từ đầu thì xóa danh sách cũ trước. Thiệp cũ chưa có bên mời mặc định dùng nhà trai. Không nhập dữ liệu khách thật vào Git.

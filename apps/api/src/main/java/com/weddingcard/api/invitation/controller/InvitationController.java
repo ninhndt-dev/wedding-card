@@ -35,4 +35,9 @@ public class InvitationController {
     service.delete(id);
     return Map.of("ok", true);
   }
+
+  @DeleteMapping
+  public Object deleteAll() {
+    return Map.of("ok", true, "deleted", service.deleteAll());
+  }
 }

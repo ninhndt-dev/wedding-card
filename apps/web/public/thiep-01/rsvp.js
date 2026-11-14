@@ -9,7 +9,6 @@
       const status=document.createElement('p');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
       status.style.cssText='font-size:18px;line-height:1.5;text-align:center;margin:6px 0;white-space:normal;color:#334b3d;';
       form.appendChild(status);
-      const note=document.createElement('small');note.textContent='Lời nhắn chỉ hiển thị với cô dâu, chú rể trong trang quản trị.';note.style.cssText='font-size:16px;line-height:1.5;color:#6b7280;';form.appendChild(note);
       if(invitationToken){
         const limitNote=document.createElement('small');limitNote.style.cssText='font-size:16px;line-height:1.5;color:#6b7280;';number.closest('label')?.appendChild(limitNote);
         fetch('/api/invitation/'+encodeURIComponent(invitationToken),{cache:'no-store'}).then(async response=>{
@@ -18,7 +17,7 @@
           if(Number.isInteger(limit)&&limit>0){number.max=String(limit);limitNote.textContent='Thiệp này mời tối đa '+limit+' người.';}
         }).catch(error=>{status.style.color='#a12a2a';status.textContent=error.message||'Không tải được giới hạn khách mời.';});
       }
-      const update=()=>{const yes=form.elements.willAttend.value==='yes';number.disabled=!yes;number.required=yes;event.disabled=!yes;event.required=yes;};
+      const update=()=>{const yes=form.elements.willAttend.value==='yes';number.disabled=!yes;number.required=yes;if(event){event.disabled=!yes;event.required=yes;}};
       form.addEventListener('change',update);update();
       form.addEventListener('submit',async function(e){
         e.preventDefault();e.stopImmediatePropagation();

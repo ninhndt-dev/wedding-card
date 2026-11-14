@@ -15,6 +15,8 @@
     "swayBottom",
   ]);
   const prepared = new WeakSet();
+  const imagesReady = new WeakSet(),
+    loadingImages = new WeakSet();
   let started = false,
     queued = false;
   const observer =
@@ -38,6 +40,36 @@
 
   function play(element) {
     if (element.dataset.revealState !== "pending") return;
+    const cover = document.getElementById("miuOpening");
+    if (
+      element.matches("[data-miu-album-item]") &&
+      cover &&
+      cover.dataset.open !== "0" &&
+      getComputedStyle(cover).display !== "none"
+    )
+      return;
+    if (element.matches("[data-miu-album-item]") && !imagesReady.has(element)) {
+      if (loadingImages.has(element)) return;
+      loadingImages.add(element);
+      const images = [...element.querySelectorAll("img")];
+      // Reveal the photo itself, rather than spending its entrance on a loading image.
+      images.forEach((img) => {
+        img.loading = "eager";
+      });
+      Promise.all(images.map((img) => img.decode().catch(() => {}))).then(
+        () => {
+          imagesReady.add(element);
+          loadingImages.delete(element);
+          if (element.isConnected && !reduced.matches) {
+            const bounds = element.getBoundingClientRect();
+            if (!observer || (bounds.bottom > 0 && bounds.top < innerHeight))
+              play(element);
+            else observe(element);
+          }
+        },
+      );
+      return;
+    }
     const preset = element.dataset.animPreset;
     const duration = Math.max(0, Number(element.dataset.animDuration) || 600);
     const delay = Math.max(0, Number(element.dataset.animDelay) || 0);
@@ -117,7 +149,13 @@
   }
   window.weddingReveal = { refresh };
   window.addEventListener("miu:opening:willClose", start);
-  window.addEventListener("miu:opening:closed", start);
+  window.addEventListener("miu:opening:closed", () => {
+    start();
+    if (!preview && !reduced.matches)
+      canvas
+        .querySelectorAll('[data-miu-album-item][data-reveal-state="pending"]')
+        .forEach(observe);
+  });
   reduced.addEventListener("change", () => {
     if (reduced.matches) refresh();
   });

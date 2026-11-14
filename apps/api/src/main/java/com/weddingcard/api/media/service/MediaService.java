@@ -36,7 +36,7 @@ public class MediaService {
           Map.entry("ttf", "font/ttf"));
 
   public MediaService(EditorRepository repo, @Value("${app.upload-dir}") String path,
-      @Value("${app.media-max-bytes:20971520}") int maxBytes)
+      @Value("${app.media-max-bytes:33554432}") int maxBytes)
       throws Exception {
     this.repo = repo;
     this.maxBytes = maxBytes;
@@ -49,9 +49,9 @@ public class MediaService {
     String ext = type(b);
     if (ext == null) throw new ApiError(400, "Định dạng file không được hỗ trợ.");
     String mime = TYPES.get(ext);
-    int limit = mime.startsWith("font/") ? 3 : mime.startsWith("image/") ? 8 : 20;
+    int limit = mime.startsWith("font/") ? 3 : mime.startsWith("image/") ? 32 : 20;
     if (b.length > limit * 1024 * 1024 || b.length > maxBytes)
-      throw new ApiError(413, "File quá lớn.");
+      throw new ApiError(413, "File quá lớn. Giới hạn " + Math.min(limit * 1024 * 1024, maxBytes) / (1024 * 1024) + " MB.");
     String id = UUID.randomUUID().toString(), filename = id + "." + ext;
     String name =
         Optional.ofNullable(file.getOriginalFilename())

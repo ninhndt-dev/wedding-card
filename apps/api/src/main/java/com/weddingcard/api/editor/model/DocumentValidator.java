@@ -52,6 +52,7 @@ public class DocumentValidator {
     for (Object a : album) {
       url(map(a).get("src"));
       str(map(a), "caption", 300, false);
+      if (map(a).containsKey("crop")) crop(map(a).get("crop"));
     }
     for (String side : List.of("groom", "bride")) {
       var e = map(map(d.get("events")).get(side));
@@ -97,6 +98,12 @@ public class DocumentValidator {
   }
 
   private void node(Map<String, Object> n, boolean added) {
+    if (n.containsKey("crop")) crop(n.get("crop"));
+    if (n.containsKey("panelCrops")) {
+      var panels = list(n.get("panelCrops"));
+      if (panels.size() > 3) throw ApiError.bad();
+      panels.forEach(this::crop);
+    }
     if (n.containsKey("text")) str(n, "text", 5000, false);
     for (String k : List.of("src", "href")) if (n.containsKey(k)) url(n.get(k));
     if (n.containsKey("hidden") && !(n.get("hidden") instanceof Boolean)) throw ApiError.bad();
@@ -120,8 +127,19 @@ public class DocumentValidator {
               "product",
               "heading",
               "side",
+              "lunar",
               "date")) {
         if (p.containsKey(key)) str(p, key, key.equals("body") ? 10000 : 1000, false);
+      }
+      if ("event".equals(n.get("type"))) {
+        for (String side : List.of("groom", "bride")) {
+          for (String field : List.of("Venue", "Address", "Time")) str(p, side + field, 1000, false);
+          url(p.get(side + "MapUrl"));
+          String time = str(p, side + "Time", 5, false);
+          if (!time.isEmpty()) {
+            try { java.time.LocalTime.parse(time); } catch (Exception invalidTime) { throw ApiError.bad(); }
+          }
+        }
       }
       if (p.containsKey("side") && !List.of("", "groom", "bride").contains(p.get("side")))
         throw ApiError.bad();
@@ -130,7 +148,11 @@ public class DocumentValidator {
 
       if (p.containsKey("unitPrice")) number(p.get("unitPrice"), 0, 1000000000);
       for (String k : List.of("url", "poster")) if (p.containsKey(k)) url(p.get(k));
-      if (p.containsKey("date") && !p.get("date").equals("")) date(p.get("date"));
+      if (p.containsKey("date") && !p.get("date").equals("")) {
+        if ("event".equals(n.get("type"))) {
+          try { java.time.LocalDate.parse(p.get("date").toString()); } catch (Exception invalidDate) { throw ApiError.bad(); }
+        } else date(p.get("date"));
+      }
       if (p.containsKey("images")) {
         var images = list(p.get("images"));
         if (images.size() > 100) throw ApiError.bad();
@@ -143,6 +165,14 @@ public class DocumentValidator {
           for (Object v : values) if (k.equals("links")) url(map(v).get("url"));
         }
     }
+  }
+
+  private void crop(Object value) {
+    var c = map(value);
+    if (!Set.of("zoom", "x", "y").containsAll(c.keySet())) throw ApiError.bad();
+    number(c.getOrDefault("zoom", 100), 50, 400);
+    number(c.getOrDefault("x", 0), -100, 100);
+    number(c.getOrDefault("y", 0), -100, 100);
   }
 
   private void scan(Object v, int depth) {

@@ -23,6 +23,23 @@ class DocumentValidatorTest {
   }
 
   @Test
+  void validatesImageCropBounds() {
+    var doc = json.resource("default-document.json");
+    var crop = java.util.Map.of("zoom", 150, "x", -10, "y", 20);
+    Json.map(doc.get("nodes")).put("element_image_sl7w5g2lfcf",
+        java.util.Map.of("crop", crop, "panelCrops", java.util.List.of(crop)));
+    Json.map(Json.list(doc.get("album")).getFirst()).put("crop", crop);
+    assertDoesNotThrow(() -> validator.validate(doc));
+    for (var invalid : java.util.List.of(
+        java.util.Map.of("zoom", 49), java.util.Map.of("zoom", 401),
+        java.util.Map.of("x", 101), java.util.Map.of("y", -101),
+        java.util.Map.of("zoom", 100.5), java.util.Map.of("unknown", 1))) {
+      Json.map(doc.get("nodes")).put("element_image_sl7w5g2lfcf", java.util.Map.of("crop", invalid));
+      assertThrows(ApiError.class, () -> validator.validate(doc));
+    }
+  }
+
+  @Test
   void rejectsUnknownLayerAndUnsafeStyle() {
     var doc = json.resource("default-document.json");
     Json.map(doc.get("nodes")).put("missing", java.util.Map.of("text", "fake"));

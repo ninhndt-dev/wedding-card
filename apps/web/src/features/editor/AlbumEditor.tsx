@@ -1,4 +1,5 @@
 import { Field, Media } from "./fields";
+import { ImageCropControls } from "./ImageCropControls";
 import type { Asset, WeddingDocument } from "../../lib/types";
 
 interface AlbumEditorProps {
@@ -71,6 +72,15 @@ export function AlbumEditor({
             onChange={(v) =>
               change((d) => {
                 d.album[i].caption = v;
+              })
+            }
+          />
+          <ImageCropControls
+            label={"Ảnh album " + (i + 1)}
+            value={photo.crop}
+            onChange={(crop) =>
+              change((d) => {
+                d.album[i].crop = crop;
               })
             }
           />

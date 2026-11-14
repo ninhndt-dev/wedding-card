@@ -1,4 +1,6 @@
 import { AlbumEditor } from "./AlbumEditor";
+import { EventFields } from "./EventFields";
+import { ImageCropControls } from "./ImageCropControls";
 import type { WeddingDocument, EditorState } from "../../lib/types";
 
 import { useEffect, useRef, useState } from "react";
@@ -21,7 +23,7 @@ import { WIDGET_CATALOG } from "../../lib/widget-catalog";
 const tabs = [
   ["content", "Thông tin chung"],
   ["opening", "Mở thiệp"],
-  ["events", "Hai lễ cưới"],
+  ["events", "Lịch & sự kiện"],
   ["layers", "Các lớp"],
   ["album", "Ảnh & album"],
   ["forms", "Biểu mẫu"],
@@ -55,6 +57,7 @@ const typeLabel = {
   login: "Đăng nhập",
   gift: "Quà mừng",
   timeline: "Lịch trình",
+  event: "Sự kiện cưới",
 };
 const fonts = [
   "Original",
@@ -76,6 +79,7 @@ export default function Editor() {
     [search, setSearch] = useState(""),
     [filter, setFilter] = useState("all"),
     [width, setWidth] = useState(600),
+    [previewSide, setPreviewSide] = useState("groom"),
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState(""),
     [dirty, setDirty] = useState(false),
@@ -147,9 +151,12 @@ export default function Editor() {
   }, [tab]);
   useEffect(() => {
     if (!doc) return;
-    const timer = setTimeout(() => send("render", { document: doc }), 180);
+    const timer = setTimeout(
+      () => send("render", { document: doc, side: previewSide }),
+      180,
+    );
     return () => clearTimeout(timer);
-  }, [doc]);
+  }, [doc, previewSide]);
   useEffect(() => {
     const listener = (e) => {
       if (
@@ -160,7 +167,7 @@ export default function Editor() {
         return;
       const m = e.data;
       if (m.type === "ready") {
-        send("render", { document: current.current });
+        send("render", { document: current.current, side: previewSide });
         send("interactive", { value: tab === "preview" });
       }
       if (m.type === "select") {
@@ -182,7 +189,7 @@ export default function Editor() {
     };
     window.addEventListener("message", listener);
     return () => window.removeEventListener("message", listener);
-  }, [doc, tab]);
+  }, [doc, tab, previewSide]);
   useEffect(() => {
     const before = (e) => {
       if (dirty) {
@@ -259,9 +266,13 @@ export default function Editor() {
       setBusy(false);
     }
   }
-  async function upload(file) {
+  async function upload(file, onStatus?: (message: string) => void) {
+    const status = (text: string) => {
+      setMessage(text);
+      onStatus?.(text);
+    };
     setBusy(true);
-    setMessage("Đang tải " + file.name + "…");
+    status("Đang tải file gốc " + file.name + "…");
     try {
       const form = new FormData();
       form.append("file", file);
@@ -269,15 +280,24 @@ export default function Editor() {
         method: "POST",
         body: form,
       });
-      const d = await r.json();
+      const d = await r.json().catch(() => {
+        throw Error(
+          r.status === 413
+            ? "File quá lớn. Vui lòng chọn file nhỏ hơn."
+            : "Không tải được file. Vui lòng thử lại.",
+        );
+      });
       if (!r.ok) throw Error(d.error);
       setMeta((m) => ({ ...m, assets: [d.asset, ...m.assets] }));
-      setMessage(
-        "Đã tải file. Lưu bản nháp hoặc áp dụng để giữ thay đổi trên thiệp.",
+      status(
+        "Đã tải file gốc, giữ nguyên chất lượng. Lưu bản nháp hoặc áp dụng để giữ thay đổi trên thiệp.",
       );
       return d.asset.url;
     } catch (e) {
-      setMessage(e.message);
+      status(
+        e.message ||
+          "Không xử lý được ảnh. Vui lòng thử ảnh JPG hoặc PNG khác.",
+      );
       return null;
     } finally {
       setBusy(false);
@@ -309,7 +329,8 @@ export default function Editor() {
     const type = descriptor.type,
       id = "custom_" + crypto.randomUUID(),
       props = clone(descriptor.props);
-    if (props.date) props.date = current.current.settings.date;
+    if (props.date && descriptor.type !== "event")
+      props.date = current.current.settings.date;
     const generic = [
       "text",
       "button",
@@ -780,7 +801,25 @@ export default function Editor() {
             )}
             {tab === "events" && (
               <>
-                <h2>Hai lễ cưới</h2>
+                <h2>Các sự kiện cưới</h2>
+                {doc.additions
+                  .filter((n) => n.type === "event")
+                  .map((n) => (
+                    <section className="ed-card" key={n.id}>
+                      <h3>{n.text}</h3>
+                      <EventFields
+                        value={n.props || {}}
+                        onChange={(key, v) =>
+                          change((d) => {
+                            const event = d.additions.find(
+                              (a) => a.id === n.id,
+                            );
+                            event.props = { ...event.props, [key]: v };
+                          })
+                        }
+                      />
+                    </section>
+                  ))}
                 {["groom", "bride"].map((side) => (
                   <section className="ed-card" key={side}>
                     <h3>{side === "groom" ? "Nhà trai" : "Nhà gái"}</h3>
@@ -1126,6 +1165,14 @@ export default function Editor() {
               </button>
             </div>
             <small>{width}px</small>
+            <select
+              aria-label="Xem trước bên mời"
+              value={previewSide}
+              onChange={(e) => setPreviewSide(e.target.value)}
+            >
+              <option value="groom">Thiệp nhà trai</option>
+              <option value="bride">Thiệp nhà gái</option>
+            </select>
           </div>
           <div className="ed-frame-area">
             <iframe
@@ -1343,6 +1390,33 @@ export default function Editor() {
               </label>
               {value.type === "image" && (
                 <>
+                  <ImageCropControls
+                    label="Canh ảnh"
+                    value={value.crop}
+                    onChange={(crop) => patch({ crop })}
+                  />
+                  {selected === "element_image_sl7w5g2lfcf" &&
+                    ["Khung trái", "Khung giữa", "Khung phải"].map(
+                      (label, i) => (
+                        <ImageCropControls
+                          key={label}
+                          label={label}
+                          value={value.panelCrops?.[i]}
+                          onChange={(crop) => {
+                            const panelCrops = [0, 1, 2].map(
+                              (index) =>
+                                value.panelCrops?.[index] || {
+                                  zoom: 100,
+                                  x: 0,
+                                  y: 0,
+                                },
+                            );
+                            panelCrops[i] = crop;
+                            patch({ panelCrops });
+                          }}
+                        />
+                      ),
+                    )}
                   <label className="ed-field">
                     <span>Cách hiển thị ảnh</span>
                     <select

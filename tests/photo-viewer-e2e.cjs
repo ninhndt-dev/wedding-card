@@ -19,7 +19,9 @@ const origin = process.env.E2E_ORIGIN || "http://127.0.0.1:3101";
       .locator("#miuOpening")
       .waitFor({ state: "hidden", timeout: 3500 });
     const hero = page.locator('[data-node-id="element_image_az87tzsrjz9"] img');
-    const heroSrc = await hero.getAttribute("src");
+    const heroSrc =
+      (await hero.getAttribute("data-full-src")) ||
+      (await hero.getAttribute("src"));
     await hero.click({ position: { x: 50, y: 60 } });
     const viewer = page.getByRole("dialog", { name: "Xem ảnh phóng lớn" }),
       photo = viewer.locator(".photo-image");
@@ -67,16 +69,23 @@ const origin = process.env.E2E_ORIGIN || "http://127.0.0.1:3101";
       await page.evaluate(() => document.documentElement.style.overflow),
       "hidden",
     );
-    // Every eligible image, including decorations and album images, opens its original source.
+    // Wedding photos and album images open their originals; decorative images do not.
     const images = page.locator('.miu-canvas img[data-photo-view="1"]');
     const total = await images.count();
-    assert.ok(total > 10);
+    assert.ok(total >= 8);
+    const decoration = page.locator(
+      '[data-node-id="element_image_6vlk63lyqdr"] img',
+    );
+    assert.equal(await decoration.getAttribute("data-photo-view"), null);
+    await decoration.evaluate((img) => img.click());
+    assert.equal(await viewer.isVisible(), false);
     for (let i = 0; i < total; i++) {
       const target = images.nth(i);
       const expected = await target.evaluate(
         (img) =>
           new URL(
-            img.closest("[data-miu-album-item]")?.dataset.src ||
+            img.dataset.fullSrc ||
+              img.closest("[data-miu-album-item]")?.dataset.src ||
               img.currentSrc ||
               img.src,
             location.href,
@@ -237,13 +246,15 @@ const origin = process.env.E2E_ORIGIN || "http://127.0.0.1:3101";
         "Gift QR must be fully visible without clipping",
       );
       await qr.click();
-      await viewer.waitFor();
-      await page.keyboard.press("Escape");
-      await viewer.waitFor({ state: "hidden" });
+      assert.equal(
+        await viewer.isVisible(),
+        false,
+        "QR images are not wedding photos",
+      );
       assert.equal(
         await gift.isVisible(),
         true,
-        "Closing the image viewer preserves the gift popup",
+        "Clicking the QR preserves the gift popup",
       );
       await gift.locator("[data-miu-modal-close]").click();
       await gift.waitFor({ state: "hidden" });

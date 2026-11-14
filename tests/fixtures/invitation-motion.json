@@ -300,6 +300,13 @@
     "data-anim-loop": "1"
   },
   {
+    "data-anim-preset": "heartBeat",
+    "data-anim-duration": "1200",
+    "data-anim-delay": "0",
+    "data-anim-easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "data-anim-loop": "1"
+  },
+  {
     "data-node-id": "element_text_5dfcj18lfce",
     "data-anim-preset": "fadeInDown",
     "data-anim-duration": "3000",

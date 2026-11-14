@@ -84,12 +84,104 @@ if (
       const asset = (await response.json()).asset;
       uploadedAlbum.push(asset.url);
       await preview
-        .locator('[data-miu-album-item] img[src="' + asset.url + '"]')
+        .locator('[data-miu-album-item] img[data-full-src="' + asset.url + '"]')
         .waitFor();
     }
+    // Large camera JPEGs retain their original bytes in storage and when served.
+    const largeJpeg = Buffer.from(
+      await page.evaluate(() => {
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = 3000;
+        const ctx = canvas.getContext("2d");
+        const pixels = ctx.createImageData(canvas.width, canvas.height);
+        let seed = 123;
+        for (let i = 0; i < pixels.data.length; i += 4) {
+          seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+          pixels.data[i] = seed & 255;
+          pixels.data[i + 1] = (seed >>> 8) & 255;
+          pixels.data[i + 2] = (seed >>> 16) & 255;
+          pixels.data[i + 3] = 255;
+        }
+        ctx.putImageData(pixels, 0, 0);
+        return canvas.toDataURL("image/jpeg", 1).split(",")[1];
+      }),
+      "base64",
+    );
+    assert.ok(largeJpeg.length > 20 * 1024 * 1024);
+    assert.ok(largeJpeg.length < 32 * 1024 * 1024);
+    const largeUpload = page.waitForResponse(
+      (r) =>
+        r.url() === origin + "/api/editor/assets" &&
+        r.request().method() === "POST",
+    );
+    await albumPanel.locator('input[type="file"]').first().setInputFiles({
+      name: "large-camera-photo.jpg",
+      mimeType: "image/jpeg",
+      buffer: largeJpeg,
+    });
+    const originalResponse = await largeUpload;
+    assert.equal(originalResponse.status(), 201);
+    await albumPanel
+      .getByRole("status", { name: "Trạng thái tải: Ảnh album 1" })
+      .filter({ hasText: "giữ nguyên chất lượng" })
+      .waitFor();
+    const originalAsset = (await state()).assets.find(
+      (asset) => asset.original_name === "large-camera-photo.jpg",
+    );
+    originalAsset.url = "/media/" + originalAsset.filename;
+    assert.equal(originalAsset.bytes, largeJpeg.length);
+    const servedImage = await ctx.request.get(origin + originalAsset.url);
+    assert.equal(servedImage.status(), 200);
+    assert.ok(
+      (await servedImage.body()).equals(largeJpeg),
+      "Served image must match original bytes",
+    );
+    const [storedImages] = await db.query(
+      "SELECT content FROM media_assets WHERE id=?",
+      [originalAsset.id],
+    );
+    assert.ok(
+      storedImages[0].content.equals(largeJpeg),
+      "Database must preserve original bytes",
+    );
+    const displayImage = await ctx.request.get(
+      origin + originalAsset.url + "?preview=480",
+    );
+    assert.equal(displayImage.status(), 200);
+    assert.equal(displayImage.headers()["content-type"], "image/jpeg");
+    assert.ok(
+      (await displayImage.body()).length < largeJpeg.length / 4,
+      "Display image should be substantially smaller than the original",
+    );
+    assert.equal(
+      (
+        await ctx.request.get(origin + originalAsset.url + "?preview=123")
+      ).status(),
+      400,
+    );
+    uploadedAlbum[0] = originalAsset.url;
+    await preview
+      .locator(
+        '[data-miu-album-item] img[data-full-src="' + originalAsset.url + '"]',
+      )
+      .waitFor();
+    await albumPanel
+      .getByRole("status", { name: "Trạng thái tải: Ảnh album 1" })
+      .filter({ hasText: "giữ nguyên chất lượng" })
+      .waitFor();
     await albumPanel
       .getByLabel("Chú thích ảnh 1", { exact: true })
       .fill("Ảnh đầu đã thay");
+    await albumPanel
+      .getByRole("button", { name: "Ảnh album 1: Phóng to", exact: true })
+      .click();
+    await albumPanel
+      .getByRole("slider", { name: "Ảnh album 1: Dịch ngang (%)", exact: true })
+      .press("ArrowRight");
+    await preview
+      .locator('[data-miu-album-item] img[style*="scale(1.1)"]')
+      .first()
+      .waitFor();
     const saveAlbum = page.waitForResponse(
       (response) =>
         response.url() === origin + "/api/editor" &&
@@ -103,6 +195,8 @@ if (
     assert.equal(savedAlbum[0].src, uploadedAlbum[0]);
     assert.equal(savedAlbum[1].src, uploadedAlbum[1]);
     assert.equal(savedAlbum[0].caption, "Ảnh đầu đã thay");
+    assert.deepEqual(savedAlbum[0].crop, { zoom: 110, x: 1, y: 0 });
+    assert.equal(savedAlbum[1].crop, undefined);
     assert.deepEqual(savedAlbum.slice(2), originalAlbum.slice(2));
     await page.reload();
     await page
@@ -111,6 +205,102 @@ if (
     checks.push(
       "Chọn album trên thiệp, upload riêng hai ảnh, preview và lưu lại đúng từng ảnh; giữ nguyên các ảnh khác",
     );
+    const triptychId = "element_image_sl7w5g2lfcf";
+    const triptych = preview.locator('[data-node-id="' + triptychId + '"]');
+    await triptych.click({ position: { x: 10, y: 10 } });
+    await page.getByLabel("Ảnh thành phần", { exact: true }).waitFor();
+    const backgrounds = triptych.locator('[style*="background-image"]');
+    const originalBackgrounds = await backgrounds.evaluateAll((nodes) =>
+      nodes.map((node) => ({
+        image: node.style.backgroundImage,
+        position: node.style.backgroundPosition,
+      })),
+    );
+    assert.equal(originalBackgrounds.length, 3);
+    const triptychUpload = page.waitForResponse(
+      (r) =>
+        r.url() === origin + "/api/editor/assets" &&
+        r.request().method() === "POST",
+    );
+    await page
+      .locator('.ed-inspector input[type="file"]')
+      .setInputFiles(path.resolve("apps/web/public/thiep-01/icon-tl2.png"));
+    const triptychResponse = await triptychUpload;
+    assert.equal(triptychResponse.status(), 201);
+    const triptychAsset = (await triptychResponse.json()).asset;
+    const replacedBackgrounds = triptych.locator(
+      '[style*="' + triptychAsset.filename + '"]',
+    );
+    await replacedBackgrounds.first().waitFor();
+    assert.equal(await replacedBackgrounds.count(), 3);
+    assert.deepEqual(
+      await backgrounds.evaluateAll((nodes) =>
+        nodes.map((node) => node.style.backgroundPosition),
+      ),
+      originalBackgrounds.map((n) => n.position),
+    );
+    await page.getByTitle("Hoàn tác", { exact: true }).click();
+    await replacedBackgrounds.first().waitFor({ state: "hidden" });
+    assert.deepEqual(
+      await backgrounds.evaluateAll((nodes) =>
+        nodes.map((node) => ({
+          image: node.style.backgroundImage,
+          position: node.style.backgroundPosition,
+        })),
+      ),
+      originalBackgrounds,
+    );
+    await page
+      .getByLabel("Thư viện: Ảnh thành phần", { exact: true })
+      .selectOption(triptychAsset.url);
+    await replacedBackgrounds.first().waitFor();
+    await page
+      .getByRole("combobox", { name: "Cách hiển thị ảnh" })
+      .selectOption("cover");
+    await triptych
+      .locator(
+        '[style*="background-size: 300%;"], [style*="background-size: auto 100%"]',
+      )
+      .first()
+      .waitFor();
+    await page
+      .getByRole("button", { name: "Khung trái: Phóng to", exact: true })
+      .click();
+    const previewFrame = page
+      .frames()
+      .find((f) => f.url().includes("editorPreview"));
+    await previewFrame.waitForFunction(() => {
+      const panels = [
+        ...document.querySelectorAll(
+          '[data-node-id="element_image_sl7w5g2lfcf"] [style]',
+        ),
+      ].filter((n) => n.style.backgroundImage);
+      return (
+        Math.abs(
+          parseFloat(panels[0].style.backgroundSize) /
+            parseFloat(panels[2].style.backgroundSize) -
+            1.1,
+        ) < 0.001
+      );
+    });
+    const positionsBefore = await backgrounds.evaluateAll((nodes) =>
+      nodes.map((n) => n.style.backgroundPosition),
+    );
+    await page
+      .getByRole("slider", { name: "Khung trái: Dịch ngang (%)", exact: true })
+      .press("ArrowRight");
+    await previewFrame.waitForFunction((before) => {
+      const panels = [
+        ...document.querySelectorAll(
+          '[data-node-id="element_image_sl7w5g2lfcf"] [style]',
+        ),
+      ].filter((n) => n.style.backgroundImage);
+      return (
+        panels[0].style.backgroundPosition !== before[0] &&
+        panels[1].style.backgroundPosition === before[1] &&
+        panels[2].style.backgroundPosition === before[2]
+      );
+    }, positionsBefore);
     await page.getByRole("button", { name: "Cài đặt", exact: true }).click();
     await page
       .getByRole("button", { name: "Thông tin đôi bạn", exact: true })
@@ -129,6 +319,12 @@ if (
     assert.equal(r.status(), 200, await r.text());
     s = await state();
     assert.equal(s.document.settings.groom, "Spring MySQL QA");
+    assert.equal(s.document.nodes[triptychId].src, triptychAsset.url);
+    assert.deepEqual(s.document.nodes[triptychId].panelCrops[0], {
+      zoom: 110,
+      x: 1,
+      y: 0,
+    });
     assert.notEqual(
       (await (await ctx.request.get(origin + "/api/content")).json()).groom,
       "Spring MySQL QA",
@@ -156,6 +352,19 @@ if (
     assert.equal(
       (await (await ctx.request.get(origin + "/api/content")).json()).groom,
       "Spring MySQL QA",
+    );
+    assert.equal(
+      (await (await ctx.request.get(origin + "/api/content")).json()).editor
+        .nodes[triptychId].src,
+      triptychAsset.url,
+    );
+    assert.equal(
+      (await (await ctx.request.get(origin + "/api/content")).json()).editor
+        .nodes[triptychId].panelCrops[0].zoom,
+      110,
+    );
+    checks.push(
+      "Thay ảnh ghép ba khung bằng upload hoặc thư viện, giữ vị trí khung, hoàn tác và xuất bản đúng ảnh",
     );
     checks.push(
       "Editor lưu nháp, áp dụng, lịch sử và chống ghi đè phiên bản; dữ liệu MySQL",
@@ -355,13 +564,13 @@ if (
     checks.push("Thiệp công khai và hiệu ứng mở hoạt động trên Vite");
     const form = page.locator('form[data-miu-rsvp-form="1"]').first();
     await form.locator('[name="guestName"]').fill("Khách gửi từ giao diện");
-    await form.locator('[name="willAttend"][value="yes"]').check();
     await form.locator('[name="numberOfGuests"]').fill("2");
-    await form.locator('[name="eventType"][value="nhagai"]').check();
-    await form
-      .locator('[name="eventName"]')
-      .selectOption({ label: "Tiệc cưới" });
-    await form.locator('[name="message"]').fill("Tin nhắn từ trình duyệt");
+    assert.equal(
+      await form
+        .locator('[name="eventName"], [name="message"], [type="radio"]')
+        .count(),
+      0,
+    );
     waiting = page.waitForResponse(
       (r) =>
         r.url() === origin + "/api/rsvp" && r.request().method() === "POST",
@@ -379,7 +588,7 @@ if (
       ])
     )[0][0];
     assert.equal(saved.count, 2);
-    assert.equal(saved.side, "nhagai");
+    assert.equal(saved.side, "nhatrai");
     checks.push(
       "Gửi RSVP từ form thiệp → API Spring → MySQL → thông báo thành công",
     );

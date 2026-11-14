@@ -461,6 +461,33 @@
         "width": "450px",
         "height": "330px"
       }
+    },
+    {
+      "id": "event",
+      "label": "Sự kiện cưới",
+      "type": "event",
+      "group": "Đám cưới",
+      "icon": "♡",
+      "text": "BỮA CƠM THÂN MẬT",
+      "props": {
+        "date": "2026-11-27",
+        "groomTime": "",
+        "brideTime": "",
+        "groomVenue": "",
+        "groomAddress": "",
+        "groomMapUrl": "",
+        "brideVenue": "",
+        "brideAddress": "",
+        "brideMapUrl": "",
+        "lunar": ""
+      },
+      "style": {
+        "left": "0px",
+        "width": "575px",
+        "height": "575px",
+        "fontSize": "20px",
+        "zIndex": "5"
+      }
     }
   ],
   "WIDGET_TYPES": [
@@ -486,7 +513,8 @@
     "order",
     "login",
     "gift",
-    "timeline"
+    "timeline",
+    "event"
   ],
   "STYLE_KEYS": [
     "left",

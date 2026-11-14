@@ -32,6 +32,11 @@ export interface RsvpRequest {
   message: string;
   submissionId: string;
 }
+export interface ImageCrop {
+  zoom: number;
+  x: number;
+  y: number;
+}
 export interface CanvasNode {
   id: string;
   type: string;
@@ -39,6 +44,8 @@ export interface CanvasNode {
   src?: string;
   href?: string;
   hidden?: boolean;
+  crop?: ImageCrop;
+  panelCrops?: ImageCrop[];
   style: Record<string, string>;
   props?: Record<string, any>;
   label?: string;
@@ -64,7 +71,7 @@ export interface WeddingDocument {
   settings: Record<string, string>;
   nodes: Record<string, Partial<CanvasNode>>;
   additions: CanvasNode[];
-  album: { src: string; caption: string }[];
+  album: { src: string; caption: string; crop?: ImageCrop }[];
   events: Record<"groom" | "bride", Record<string, string>>;
   forms: Record<
     "rsvp" | "wishes",

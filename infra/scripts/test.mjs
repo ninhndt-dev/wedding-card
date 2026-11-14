@@ -95,6 +95,9 @@ try {
     "tests/opening-e2e.cjs",
     "tests/reveal-e2e.cjs",
     "tests/photo-viewer-e2e.cjs",
+    "tests/invitation-events-e2e.cjs",
+    "tests/forms-layout-e2e.cjs",
+    "tests/album-motion-e2e.cjs",
   ]) {
     const code = await new Promise((resolve) => {
       const child = spawn("node", [file], {

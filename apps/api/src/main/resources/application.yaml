@@ -17,15 +17,15 @@ spring:
     enabled: true
   servlet:
     multipart:
-      max-file-size: 20MB
-      max-request-size: 25MB
+      max-file-size: ${UPLOAD_MAX_FILE_SIZE:32MB}
+      max-request-size: ${UPLOAD_MAX_REQUEST_SIZE:33MB}
 app:
   origin: ${APP_ORIGIN:http://127.0.0.1:3100}
   admin-password: ${ADMIN_PASSWORD}
   session-secret: ${SESSION_SECRET}
   cookie-secure: ${COOKIE_SECURE:false}
   upload-dir: ${UPLOAD_DIR:../../data/uploads}
-  media-max-bytes: ${MEDIA_MAX_BYTES:20971520}
+  media-max-bytes: ${MEDIA_MAX_BYTES:33554432}
   migration-file: ${MIGRATION_FILE:}
 logging:
   level:

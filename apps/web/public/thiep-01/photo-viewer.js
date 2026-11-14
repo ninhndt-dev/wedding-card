@@ -47,6 +47,11 @@
       )
     )
       return false;
+    if (!img.closest(".miu-canvas")) return false;
+    const inAlbum = img.closest(
+      "[data-miu-album-item],[data-miu-album-main],.ww-album",
+    );
+    if (!inAlbum && img.dataset.photoKind !== "wedding") return false;
     if (!img.getClientRects().length || !source(img)) return false;
     const control = img.closest(controls);
     if (!control) return true;
@@ -71,6 +76,15 @@
     );
   }
   function refresh() {
+    for (const img of document.querySelectorAll('img[data-photo-view="1"]')) {
+      if (!eligible(img)) {
+        delete img.dataset.photoView;
+        img.removeAttribute("tabindex");
+        img.removeAttribute("role");
+        img.removeAttribute("aria-haspopup");
+        img.removeAttribute("aria-label");
+      }
+    }
     for (const img of candidates()) {
       img.dataset.photoView = "1";
       if (!img.closest(controls)) {
@@ -190,7 +204,8 @@
     ])) {
       if (next !== index) {
         const preload = new Image();
-        preload.src = items[next].src;
+        preload.src =
+          window.weddingMediaPreview?.(items[next].src, 960) || items[next].src;
       }
     }
   }
@@ -340,7 +355,7 @@
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ["src", "srcset"],
+    attributeFilter: ["src", "srcset", "data-full-src", "data-photo-kind"],
   });
   refresh();
 })();

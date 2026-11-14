@@ -31,12 +31,17 @@ public class ContentController {
   }
 
   @GetMapping("/api/content")
-  public Object content() {
+  public Object content(@RequestParam(required = false) String invite) {
     var row = editor.row(false);
     var doc = editor.published();
     var result = new LinkedHashMap<>(Json.map(doc.get("settings")));
     result.put("site", doc.get("site"));
     result.put("editor", row.get("published") == null ? null : doc);
+    if (invite != null && !invite.isBlank()) {
+      var invitation = invitations.byToken(invite);
+      result.put("invitation", Map.of("name", invitation.get("name"),
+          "side", InvitationService.sideCode(invitation.get("side"))));
+    }
     return result;
   }
 
@@ -68,7 +73,8 @@ public class ContentController {
   @GetMapping("/api/invitation/{token}")
   public Object invitationDetails(@PathVariable String token) {
     var invitation = invitations.byToken(token);
-    return Map.of("name", invitation.get("name"), "invitedCount", invitation.get("invited_count"));
+    return Map.of("name", invitation.get("name"), "invitedCount", invitation.get("invited_count"),
+        "side", InvitationService.sideCode(invitation.get("side")));
   }
 
   @PostMapping("/api/visits")

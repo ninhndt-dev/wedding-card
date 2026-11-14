@@ -34,7 +34,7 @@ public class GuestService {
         event = str(b, "eventName", 100, false);
     if (!(b.get("willAttend") instanceof Boolean attend)
         || !List.of("nhatrai", "nhagai").contains(side)) throw ApiError.bad();
-    if ((attend || !event.isEmpty()) && !events().contains(event)) throw ApiError.bad();
+    if (!event.isEmpty() && !events().contains(event)) throw ApiError.bad();
     long count = attend ? number(b.get("numberOfGuests"), 1, 50) : 0;
     String token = str(b, "invitationToken", 48, false);
     if (attend && !token.isEmpty()) {

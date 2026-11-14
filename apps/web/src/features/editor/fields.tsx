@@ -1,4 +1,5 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { mediaPreview } from "../../lib/media-preview";
 const asUrl = (v) => (v?.startsWith("./") ? "/thiep-01/" + v.slice(2) : v);
 export function Field({
   label,
@@ -40,12 +41,19 @@ export function Media({
   kind = "image",
 }: any) {
   const file = useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [status, setStatus] = useState("");
   const choices = assets.filter((a) => a.mime?.startsWith(kind + "/"));
   return (
     <div className="ed-media">
       <Field label={label} value={value} onChange={onChange} />
       {kind === "image" && value && (
-        <img src={asUrl(value)} alt="Xem trước ảnh" />
+        <img
+          src={mediaPreview(asUrl(value))}
+          loading="lazy"
+          decoding="async"
+          alt="Xem trước ảnh"
+        />
       )}
       {kind === "audio" && value && (
         <audio
@@ -62,7 +70,11 @@ export function Media({
         />
       )}
       <div className="ed-media-actions">
-        <button type="button" onClick={() => file.current?.click()}>
+        <button
+          type="button"
+          disabled={uploading}
+          onClick={() => file.current?.click()}
+        >
           ↑ Tải{" "}
           {{ image: "ảnh", audio: "nhạc", font: "font", video: "video" }[kind]}
         </button>
@@ -72,12 +84,17 @@ export function Media({
           type="file"
           accept={kind === "font" ? ".ttf,.otf,.woff2" : kind + "/*"}
           onChange={async (e) => {
-            const f = e.target.files?.[0];
-            if (f) {
-              const url = await upload(f);
+            const input = e.currentTarget;
+            const f = input.files?.[0];
+            if (!f) return;
+            setUploading(true);
+            try {
+              const url = await upload(f, setStatus);
               if (url) onChange(url);
+            } finally {
+              input.value = "";
+              setUploading(false);
             }
-            e.target.value = "";
           }}
         />
         <select
@@ -95,6 +112,15 @@ export function Media({
           ))}
         </select>
       </div>
+      {status && (
+        <p
+          className="ed-help"
+          role="status"
+          aria-label={"Trạng thái tải: " + label}
+        >
+          {status}
+        </p>
+      )}
     </div>
   );
 }

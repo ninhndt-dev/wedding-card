@@ -1,0 +1,12 @@
+[data-miu-rsvp-form] [role=status]:empty,[data-miu-wishes-form] [role=status]:empty{display:none}
+[data-miu-wishes-list][hidden]{display:none!important}
+[data-miu-wishes-list].miu-wishes-ticker{height:240px;flex:0 0 auto!important;overflow:hidden!important;position:relative;mask-image:linear-gradient(transparent,#000 16px,#000 calc(100% - 16px),transparent);-webkit-mask-image:linear-gradient(transparent,#000 16px,#000 calc(100% - 16px),transparent)}
+.miu-wishes-track{animation:wedding-wishes-scroll var(--wish-duration,24s) linear infinite;will-change:transform}
+.miu-wishes-batch{display:flex;flex-direction:column;gap:12px;padding:6px 0}
+.miu-wishes-ticker .miu-wishes-item{padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.88);overflow-wrap:anywhere;white-space:pre-wrap;font:18px/1.55 Lora,Georgia,serif;color:#334b3d}
+.miu-wishes-ticker .miu-wishes-name{font-weight:700;margin-bottom:5px;color:#4e6437}
+.miu-wishes-ticker .miu-wishes-comment{white-space:pre-wrap}
+.miu-wishes-ticker:hover .miu-wishes-track,.miu-wishes-ticker:focus-within .miu-wishes-track,.miu-wishes-ticker[data-ticker-visible=false] .miu-wishes-track,.miu-wishes-ticker[data-ticker-paused=true] .miu-wishes-track{animation-play-state:paused}
+@keyframes wedding-wishes-scroll{to{transform:translateY(-50%)}}
+@media(prefers-reduced-motion:reduce){[data-miu-wishes-list].miu-wishes-ticker{overflow:auto!important;mask-image:none;-webkit-mask-image:none}.miu-wishes-track{animation:none;will-change:auto}.miu-wishes-batch[aria-hidden=true],.miu-wishes-item[aria-hidden=true]{display:none}}
+[data-miu-wishes-list].miu-wishes-ticker:focus-within{overflow:auto!important;mask-image:none;-webkit-mask-image:none}

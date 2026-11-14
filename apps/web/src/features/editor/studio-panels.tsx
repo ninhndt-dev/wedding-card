@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Field, Media } from "./fields";
+import { EventFields } from "./EventFields";
+import { mediaPreview } from "../../lib/media-preview";
 import { WIDGET_CATALOG, PALETTES, STOCK } from "../../lib/widget-catalog";
 export function CatalogPanel({ add, layers }: any) {
   const [search, setSearch] = useState("");
@@ -184,7 +186,12 @@ export function MediaPanel({ doc, meta, setMeta, upload, add, message }: any) {
             return (
               <article key={a.id}>
                 {a.mime.startsWith("image/") ? (
-                  <img src={url} alt={a.original_name} />
+                  <img
+                    src={mediaPreview(url)}
+                    loading="lazy"
+                    decoding="async"
+                    alt={a.original_name}
+                  />
                 ) : (
                   <div className="studio-media-type">
                     {a.mime.startsWith("video/")
@@ -586,7 +593,7 @@ export function SettingsPanel({ doc, change, go }: any) {
       <ShareQR doc={doc} />
       <div className="studio-row">
         <button onClick={() => go("content")}>Thông tin đôi bạn</button>
-        <button onClick={() => go("events")}>Hai lễ cưới</button>
+        <button onClick={() => go("events")}>Lịch & sự kiện</button>
         <button onClick={() => go("forms")}>RSVP & lời chúc</button>
         <button onClick={() => go("gifts")}>Nhạc & quà mừng</button>
         <button onClick={() => go("theme")}>Font & kích thước</button>
@@ -785,6 +792,7 @@ export function WidgetProperties({ value, patch, mediaProps }: any) {
     change = (key, v) => patch({ props: { ...p, [key]: v } });
   return (
     <div className="studio-widget-properties">
+      {value.type === "event" && <EventFields value={p} onChange={change} />}
       {value.type === "video" && (
         <>
           <Media
