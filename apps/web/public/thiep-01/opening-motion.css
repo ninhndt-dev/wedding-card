@@ -13,3 +13,8 @@ html{scrollbar-gutter:stable}
 @media(prefers-reduced-motion:reduce){#miuOpeningSides .miu-env-nutthiep,#miuOpeningSides .miu-env-click-btn{animation:none!important}#miuOpeningSides .miu-env-click-btn{opacity:1}}
 
 @media(min-width:481px){#miuOpeningSides{left:50%}}
+
+/* Keep the long page from repainting beneath the envelope on mobile. */
+html[data-cover-active] .miu-canvas,html[data-cover-active] .snowflakes{visibility:hidden}
+html[data-cover-active] .miu-canvas *,html[data-cover-active] .snowflake{animation-play-state:paused!important}
+#miuOpening[data-motion="opening"] .miu-env-flap,#miuOpening[data-motion="opening"] .miu-env-flower-left,#miuOpening[data-motion="opening"] .miu-env-flower-right{will-change:transform,opacity}

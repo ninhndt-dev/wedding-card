@@ -32,6 +32,15 @@ const fs = require("fs");
         .locator("#miuBootLoading")
         .waitFor({ state: "hidden", timeout: 45000 });
       await page.waitForFunction(() => !!window.weddingOpening);
+      assert.equal(
+        await page.locator("html").getAttribute("data-cover-active"),
+        "1",
+      );
+      assert.ok(
+        (
+          await page.locator("#miuOpening img").first().getAttribute("src")
+        ).includes("/cover/"),
+      );
       const before = await page.locator(".miu-stage").boundingBox();
       await page.evaluate(() => {
         window.__motion = { closed: 0, willClose: 0 };

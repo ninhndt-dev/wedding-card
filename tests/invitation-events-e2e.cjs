@@ -189,6 +189,8 @@ if (
         "side",
       ]);
       await p.goto(origin + "/i/" + doc.site.slug + "/" + invite.token);
+      await p.locator("#miuOpeningBtn").click();
+      await p.locator("#miuOpening").waitFor({ state: "hidden" });
       const meal = p.locator('[data-node-id="' + eventId + '"]');
       await meal
         .locator('[data-event-part="address"]')
@@ -220,9 +222,7 @@ if (
         "(Tức ngày 19 tháng 10 năm Bính Ngọ)",
       );
       assert.equal(
-        await p
-          .locator("[data-miu-rsvp-form] [name=eventType]")
-          .inputValue(),
+        await p.locator("[data-miu-rsvp-form] [name=eventType]").inputValue(),
         side === "bride" ? "nhagai" : "nhatrai",
       );
     }

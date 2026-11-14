@@ -12,22 +12,50 @@ function Invitation() {
   }, []);
   return <p>Đang mở thiệp…</p>;
 }
-createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
-    <Routes>
-      <Route path="/admin" element={<AdminPage />} />
-      <Route path="/admin/invitations" element={<InvitationsPage />} />
-      <Route path="/admin/editor" element={<EditorPage />} />
-      <Route path="/admin/preview" element={<PreviewPage />} />
-      <Route path="/" element={<Invitation />} />
-      <Route
-        path="*"
-        element={
-          <p>
-            Không tìm thấy trang. <a href="/">Mở thiệp</a>
-          </p>
+async function start() {
+  if (location.pathname.startsWith("/admin")) {
+    try {
+      const response = await fetch("/api/health", {
+        signal: AbortSignal.timeout(8000),
+      });
+      const configured = response.headers.get("X-Wedding-Origin");
+      if (configured) {
+        const canonical = new URL(configured);
+        if (
+          canonical.protocol === "https:" &&
+          canonical.origin !== location.origin
+        ) {
+          location.replace(
+            canonical.origin +
+              location.pathname +
+              location.search +
+              location.hash,
+          );
+          return;
         }
-      />
-    </Routes>
-  </BrowserRouter>,
-);
+      }
+    } catch {
+      /* Keep the login page available when the health request fails. */
+    }
+  }
+  createRoot(document.getElementById("root")!).render(
+    <BrowserRouter>
+      <Routes>
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/invitations" element={<InvitationsPage />} />
+        <Route path="/admin/editor" element={<EditorPage />} />
+        <Route path="/admin/preview" element={<PreviewPage />} />
+        <Route path="/" element={<Invitation />} />
+        <Route
+          path="*"
+          element={
+            <p>
+              Không tìm thấy trang. <a href="/">Mở thiệp</a>
+            </p>
+          }
+        />
+      </Routes>
+    </BrowserRouter>,
+  );
+}
+start();

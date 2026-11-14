@@ -30,7 +30,10 @@ public class SecurityConfig {
               throws ServletException, IOException {
             String path = req.getRequestURI();
             res.setHeader("X-Content-Type-Options", "nosniff");
-            if (path.startsWith("/api/")) res.setHeader("Cache-Control", "no-store");
+            if (path.startsWith("/api/")) {
+              res.setHeader("Cache-Control", "no-store");
+              res.setHeader("X-Wedding-Origin", origin);
+            }
             boolean write = !req.getMethod().equals("GET") && !req.getMethod().equals("HEAD");
             if (write && path.startsWith("/api/") && !origin.equals(req.getHeader("Origin"))) {
               reject(res, 403, "Nguồn gửi không hợp lệ.");

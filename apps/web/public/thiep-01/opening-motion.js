@@ -21,6 +21,7 @@
     window.dispatchEvent(new Event("miu:opening:" + name));
   function reveal() {
     if (willCloseSent) return;
+    delete root.dataset.coverActive;
     willCloseSent = true;
     event("willClose");
   }

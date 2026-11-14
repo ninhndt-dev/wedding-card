@@ -34,6 +34,30 @@ if (
   };
   try {
     assert.equal((await ctx.request.get(origin + "/api/health")).status(), 200);
+    assert.equal(
+      (await ctx.request.get(origin + "/api/health")).headers()[
+        "x-wedding-origin"
+      ],
+      origin,
+    );
+    const canonicalPage = await ctx.newPage();
+    await canonicalPage.route(origin + "/api/health", (route) =>
+      route.fulfill({
+        status: 200,
+        headers: { "X-Wedding-Origin": "https://admin-origin.example" },
+        json: { status: "UP" },
+      }),
+    );
+    await canonicalPage.route("https://admin-origin.example/admin", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "text/html",
+        body: "<p>Canonical admin</p>",
+      }),
+    );
+    await canonicalPage.goto(origin + "/admin");
+    await canonicalPage.waitForURL("https://admin-origin.example/admin");
+    await canonicalPage.close();
     assert.equal((await ctx.request.get(origin + "/api/editor")).status(), 401);
     assert.equal(
       (
