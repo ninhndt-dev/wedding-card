@@ -62,7 +62,7 @@ Giữ mẫu thiệp 01 và hiệu ứng mở thiệp, chỉnh sửa nội dung/�
 
 RSVP xác nhận tham dự bằng nút bấm, giữ tên và số người tham dự; bên gia đình lấy theo thiệp, không yêu cầu chọn lễ hay nhập lời nhắn. Lời chúc chờ admin duyệt. Dashboard tìm/lọc, duyệt/ẩn, xóa, xuất CSV; thống kê lượt xem và biểu mẫu. Đăng ký/đặt hàng lưu MySQL; giá lấy từ cấu hình đã áp dụng. Chưa tích hợp thanh toán. QR quà mừng có thể thêm sau trong editor.
 
-Session admin là token ngẫu nhiên, chỉ lưu hash trong MySQL; cookie HttpOnly, SameSite Strict, 8 giờ. Kiểm tra Origin cho mọi API ghi. File được kiểm tra signature và dung lượng; giữ file đang được dùng trong nháp, bản công khai, lịch sử hoặc preset. Lời nhắn RSVP không xuất hiện ở API công khai.
+Session admin là token ngẫu nhiên, chỉ lưu hash trong MySQL; cookie HttpOnly, SameSite Strict, 8 giờ. Kiểm tra Origin cho mọi API ghi. File được kiểm tra signature và dung lượng; giữ file đang được dùng trong nháp hoặc bản công khai. Xóa file chỉ còn trong lịch sử/preset sẽ gỡ khỏi Media và giữ bản gốc để khôi phục; khôi phục phiên bản sẽ đưa file trở lại Media. File hoàn toàn không được tham chiếu sẽ bị xóa cùng các bản ảnh xem. Lời nhắn RSVP không xuất hiện ở API công khai.
 
 ## Thiệp riêng cho khách mời
 

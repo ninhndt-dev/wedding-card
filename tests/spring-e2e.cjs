@@ -172,7 +172,10 @@ if (
       origin + originalAsset.url + "?preview=480",
     );
     assert.equal(displayImage.status(), 200);
-    assert.equal(displayImage.headers()["vercel-cdn-cache-control"], "public,max-age=31536000,immutable");
+    assert.equal(
+      displayImage.headers()["vercel-cdn-cache-control"],
+      "public,max-age=31536000,immutable",
+    );
     assert.equal(displayImage.headers()["content-type"], "image/jpeg");
     assert.ok(
       (await displayImage.body()).length < largeJpeg.length / 4,
@@ -558,6 +561,79 @@ if (
       data: { mode: "single", id: asset.id },
     });
     assert.deepEqual((await r.json()).skipped, [asset.id]);
+    s = await state();
+    r = await post("/api/editor", {
+      action: "publish",
+      revision: s.revision,
+      document: s.document,
+    });
+    assert.equal(r.status(), 200);
+    const historyWithAsset = (
+      await db.query("SELECT MAX(id) AS id FROM editor_versions")
+    )[0][0].id;
+    s = await state();
+    s.document.settings.photo = "/thiep-01/icon-tl1.png";
+    r = await post("/api/editor", {
+      action: "publish",
+      revision: s.revision,
+      document: s.document,
+    });
+    assert.equal(r.status(), 200);
+    r = await ctx.request.delete(origin + "/api/editor/assets", {
+      headers: { Origin: origin },
+      data: { mode: "single", id: asset.id },
+    });
+    assert.equal(r.status(), 200);
+    assert.deepEqual((await r.json()).archived, [asset.id]);
+    assert.ok(
+      !(await state()).assets.some((a) => a.id === asset.id),
+      "Historical media stays removed after reloading editor state",
+    );
+    assert.equal(
+      (await ctx.request.get(origin + asset.url)).status(),
+      200,
+      "Historical file remains available for restore",
+    );
+    s = await state();
+    r = await post("/api/editor", {
+      action: "restore",
+      revision: s.revision,
+      versionId: historyWithAsset,
+    });
+    assert.equal(r.status(), 200);
+    assert.ok(
+      (await state()).assets.some((a) => a.id === asset.id),
+      "Restoring a version brings its media back to the library",
+    );
+    r = await ctx.request.post(origin + "/api/editor/assets", {
+      headers: { Origin: origin },
+      multipart: {
+        file: {
+          name: "unused-delete.png",
+          mimeType: "image/png",
+          buffer: image,
+        },
+      },
+    });
+    assert.equal(r.status(), 201);
+    const unusedAsset = (await r.json()).asset;
+    await ctx.request.get(origin + unusedAsset.url + "?preview=480");
+    r = await ctx.request.delete(origin + "/api/editor/assets", {
+      headers: { Origin: origin },
+      data: { mode: "single", id: unusedAsset.id },
+    });
+    assert.equal(r.status(), 200);
+    assert.deepEqual((await r.json()).deleted, [unusedAsset.id]);
+    assert.ok(!(await state()).assets.some((a) => a.id === unusedAsset.id));
+    assert.equal(
+      (
+        await db.query(
+          "SELECT COUNT(*) n FROM media_previews WHERE filename=?",
+          [unusedAsset.filename],
+        )
+      )[0][0].n,
+      0,
+    );
     checks.push(
       "Upload ký hiệu file thật, từ chối SVG giả ảnh, bảo vệ file đang được dùng",
     );

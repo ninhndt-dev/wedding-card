@@ -113,18 +113,24 @@ export function MediaPanel({ doc, meta, setMeta, upload, add, message }: any) {
       });
       const d = await r.json();
       if (!r.ok) throw Error(d.error);
+      const removed = [...d.deleted, ...(d.archived || [])];
       setMeta((m) => ({
         ...m,
-        assets: m.assets.filter((a) => !d.deleted.includes(a.id)),
+        assets: m.assets.filter((a) => !removed.includes(a.id)),
       }));
       message(
         "Đã xóa " +
           d.deleted.length +
           " file chưa dùng" +
+          (d.archived?.length
+            ? "; đã gỡ " +
+              d.archived.length +
+              " file khỏi Media, giữ bản gốc cho lịch sử/preset"
+            : "") +
           (d.skipped.length
             ? "; giữ lại " +
               d.skipped.length +
-              " file đang dùng trong thiệp hoặc lịch sử."
+              " file đang dùng trong bản nháp hoặc thiệp công khai."
             : "."),
       );
     } catch (e) {
@@ -154,7 +160,7 @@ export function MediaPanel({ doc, meta, setMeta, upload, add, message }: any) {
           onClick={() => {
             if (
               confirm(
-                "Xóa file chưa được sử dụng? File trong bản nháp, bản đang áp dụng hoặc lịch sử sẽ được giữ lại.",
+                "Dọn file không dùng trong bản nháp và thiệp công khai? File còn trong lịch sử/preset sẽ được gỡ khỏi Media và giữ bản gốc để khôi phục.",
               )
             )
               cleanup();

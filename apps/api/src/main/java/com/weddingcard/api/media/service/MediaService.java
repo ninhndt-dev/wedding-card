@@ -85,18 +85,26 @@ public class MediaService {
 
   @Transactional
   public Map<String, Object> delete(Map<String, Object> b) {
-    repo.row(true);
+    var current = repo.row(true);
     String mode = Json.str(b, "mode", 20, true);
     if (!List.of("single", "unused").contains(mode)) throw ApiError.bad();
-    String refs = repo.references() + repo.json().write(b.getOrDefault("protectedUrls", List.of()));
+    String activeRefs = String.valueOf(current.get("draft")) + String.valueOf(current.get("published"))
+        + repo.json().write(b.getOrDefault("protectedUrls", List.of()));
+    String refs = repo.references();
     var deleted = new ArrayList<String>();
+    var archived = new ArrayList<String>();
     var skipped = new ArrayList<String>();
     String requested = Json.str(b, "id", 36, mode.equals("single"));
-    for (var row : repo.sql().rows("SELECT id,filename FROM media_assets")) {
+    for (var row : repo.sql().rows("SELECT id,filename FROM media_assets WHERE archived=0")) {
       String id = row.get("id").toString(), filename = row.get("filename").toString();
       if (mode.equals("single") && !id.equals(requested)) continue;
-      if (refs.contains("/media/" + filename)) {
+      if (activeRefs.contains("/media/" + filename)) {
         skipped.add(id);
+        continue;
+      }
+      if (refs.contains("/media/" + filename)) {
+        repo.sql().update("UPDATE media_assets SET archived=1 WHERE id=?", id);
+        archived.add(id);
         continue;
       }
       repo.sql().update("DELETE FROM media_assets WHERE id=?", id);
@@ -115,7 +123,7 @@ public class MediaService {
                 }
               });
     }
-    return Map.of("deleted", deleted, "skipped", skipped);
+    return Map.of("deleted", deleted, "archived", archived, "skipped", skipped);
   }
 
   public static String type(byte[] b) {

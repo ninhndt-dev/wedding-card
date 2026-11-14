@@ -29,7 +29,7 @@ public class EditorService {
     var out = repo.state();
     out.put("manifest", repo.json().resource("editor-manifest.json"));
     out.put(
-        "assets", repo.sql().rows("SELECT id,filename,original_name,mime,bytes,created FROM media_assets ORDER BY created DESC LIMIT 500"));
+        "assets", repo.sql().rows("SELECT id,filename,original_name,mime,bytes,created FROM media_assets WHERE archived=0 ORDER BY created DESC LIMIT 500"));
     out.put("presets", repo.presets());
     return out;
   }
@@ -38,9 +38,13 @@ public class EditorService {
     var doc = validator.validate(d);
     var files =
         Pattern.compile("/media/([a-f0-9-]{36}\\.[a-z0-9]+)").matcher(repo.json().write(doc));
-    while (files.find())
-      if (repo.sql().one("SELECT id FROM media_assets WHERE filename=?", files.group(1)) == null)
+    while (files.find()) {
+      var asset = repo.sql().one("SELECT id,archived FROM media_assets WHERE filename=?", files.group(1));
+      if (asset == null)
         throw new ApiError(400, "Có file không còn tồn tại. Vui lòng chọn lại trong Media.");
+      if (((Number) asset.get("archived")).intValue() == 1)
+        repo.sql().update("UPDATE media_assets SET archived=0 WHERE id=?", asset.get("id"));
+    }
     return doc;
   }
 
