@@ -153,6 +153,12 @@ if (
       (await displayImage.body()).length < largeJpeg.length / 4,
       "Display image should be substantially smaller than the original",
     );
+    const [savedPreviews] = await db.query(
+      "SELECT content FROM media_previews WHERE filename=? AND size=480",
+      [originalAsset.filename],
+    );
+    assert.equal(savedPreviews.length, 1);
+    assert.ok(savedPreviews[0].content.equals(await displayImage.body()));
     assert.equal(
       (
         await ctx.request.get(origin + originalAsset.url + "?preview=123")

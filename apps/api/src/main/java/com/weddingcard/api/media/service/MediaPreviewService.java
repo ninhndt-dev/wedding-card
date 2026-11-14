@@ -1,6 +1,7 @@
 package com.weddingcard.api.media.service;
 
 import com.weddingcard.api.http.ApiError;
+import com.weddingcard.api.http.Sql;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
@@ -12,11 +13,12 @@ import org.springframework.stereotype.Service;
 public class MediaPreviewService {
   public record Preview(byte[] content, String mime) {}
   private final MediaService media;
+  private final Sql sql;
   private final Map<String, Preview> cache = new LinkedHashMap<>(32, 0.75f, true);
   private long cachedBytes;
   private static final long CACHE_LIMIT = 32L * 1024 * 1024;
 
-  public MediaPreviewService(MediaService media) { this.media = media; }
+  public MediaPreviewService(MediaService media, Sql sql) { this.media = media; this.sql = sql; }
 
   // Bound concurrent decoding as well as memory retained by cached display images.
   public synchronized Preview get(String filename, int size) throws IOException {
@@ -25,6 +27,12 @@ public class MediaPreviewService {
     String key = filename + ":" + size;
     Preview cached = cache.get(key);
     if (cached != null) return cached;
+    var stored = sql.one("SELECT mime,content FROM media_previews WHERE filename=? AND size=?", filename, size);
+    if (stored != null) {
+      var result = new Preview((byte[]) stored.get("content"), stored.get("mime").toString());
+      remember(key, result);
+      return result;
+    }
     byte[] original = media.content(filename);
     if (original == null) {
       var file = media.directory().resolve(filename);
@@ -33,6 +41,14 @@ public class MediaPreviewService {
     }
     String ext = filename.substring(filename.lastIndexOf('.') + 1);
     Preview result = create(original, ext, size);
+    if (result.content().length <= 2 * 1024 * 1024)
+      sql.update("INSERT IGNORE INTO media_previews(filename,size,mime,content) SELECT filename,?,?,? FROM media_assets WHERE filename=?",
+          size, result.mime(), result.content(), filename);
+    remember(key, result);
+    return result;
+  }
+
+  private void remember(String key, Preview result) {
     if (result.content().length <= 2 * 1024 * 1024) {
       cache.put(key, result);
       cachedBytes += result.content().length;
@@ -42,7 +58,6 @@ public class MediaPreviewService {
         it.remove();
       }
     }
-    return result;
   }
 
   public synchronized void clear() { cache.clear(); cachedBytes = 0; }

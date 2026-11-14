@@ -7,8 +7,25 @@ import java.util.HexFormat;
 import java.util.Random;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.*;
+import com.weddingcard.api.http.Sql;
+import java.util.Map;
 
 class MediaPreviewServiceTest {
+  @Test
+  void readsPersistedPreviewAfterMemoryCacheIsCleared() throws Exception {
+    var media = mock(MediaService.class);
+    var sql = mock(Sql.class);
+    byte[] preview = photo();
+    when(sql.one(anyString(), eq("test.jpg"), eq(480)))
+        .thenReturn(Map.of("mime", "image/jpeg", "content", preview));
+    var service = new MediaPreviewService(media, sql);
+    assertArrayEquals(preview, service.get("test.jpg", 480).content());
+    service.clear();
+    assertArrayEquals(preview, service.get("test.jpg", 480).content());
+    verifyNoInteractions(media);
+    verify(sql, times(2)).one(anyString(), eq("test.jpg"), eq(480));
+  }
   byte[] photo() throws IOException {
     var image = new BufferedImage(1200, 800, BufferedImage.TYPE_INT_RGB);
     var random = new Random(42);
