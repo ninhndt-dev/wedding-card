@@ -5,6 +5,7 @@
     <link rel="preload" as="image" fetchpriority="high" href="/thiep-01/cover/phongbi.webp"><link rel="preload" as="image" fetchpriority="high" href="/thiep-01/cover/nen.webp"><link rel="preload" as="image" fetchpriority="high" href="/thiep-01/cover/hoa.webp"><link rel="preload" as="image" fetchpriority="high" href="/thiep-01/cover/hoabentrai.webp">
 <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+      html[data-guest-pending] .miu-env-invite,html[data-guest-pending] [data-node-id="element_text_sk4r8u6s7ly"] { visibility:hidden; }
       #miuBootLoading { position: fixed; inset: 0; z-index: 2147483000; background: #ffffff; display: flex; align-items: center; justify-content: center; transition: opacity 180ms ease; }
       #miuBootLoading[data-hide="1"] { opacity: 0; }
       #miuBootLoading .miuBootSpinner { width: 44px; height: 44px; border-radius: 999px; border: 3px solid rgba(244,63,94,0.18); border-top-color: rgba(244,63,94,0.82); animation: miuBootSpin 700ms linear infinite; }
@@ -15,6 +16,8 @@
         var htmlEl = document.documentElement;
         if (!new URLSearchParams(location.search).has("editorPreview")) htmlEl.dataset.coverActive="1";
         if (!htmlEl) return;
+        var guestParams = new URLSearchParams(location.search);
+        if (guestParams.has('invite') || guestParams.has('guest')) htmlEl.dataset.guestPending='1';
         // Mobile: tắt backdrop-filter trên shape blur vùng lớn (crash iOS / giật Android)
         if (/iP(hone|ad|od)/.test(navigator.userAgent) || /Android/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
           htmlEl.classList.add('miu-bb-off');
@@ -683,6 +686,13 @@
 
 
 
+<script>(function(){
+  var guest = new URLSearchParams(location.search).get('guest')?.trim().slice(0,100);
+  if (!guest) return;
+  window.weddingInvitationName = guest;
+  document.querySelectorAll('.miu-env-invite,[data-node-id="element_text_sk4r8u6s7ly"]').forEach(function(el){ el.textContent = guest; });
+  delete document.documentElement.dataset.guestPending;
+})();</script>
 <script>(function(){
   try {
     function pad(n){ n = Math.max(0, n|0); return (n<10?'0':'')+n; }

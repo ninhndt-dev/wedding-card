@@ -5,6 +5,50 @@ const fs = require("fs");
   const browser = await chromium.launch({ headless: true });
   const results = [];
   try {
+    const origin = process.env.E2E_ORIGIN || "http://127.0.0.1:3101";
+    const earlyContext = await browser.newContext();
+    const earlyPage = await earlyContext.newPage();
+    const content = await (
+      await earlyContext.request.get(origin + "/api/content")
+    ).json();
+    let releaseContent;
+    const gate = new Promise((resolve) => {
+      releaseContent = resolve;
+    });
+    await earlyPage.route(
+      "**/api/content?invite=early-name-test",
+      async (route) => {
+        await gate;
+        await route.fulfill({
+          json: {
+            ...content,
+            invitation: { name: "Khách hiện ngay", side: "groom" },
+          },
+        });
+      },
+    );
+    await earlyPage.route("**/api/invitation/early-name-test", (route) =>
+      route.fulfill({ json: { name: "Khách hiện ngay", invitedCount: 0 } }),
+    );
+    await earlyPage.goto(
+      origin +
+        "/thiep-01/index.html?invite=early-name-test&guest=" +
+        encodeURIComponent("Khách hiện ngay"),
+      { waitUntil: "domcontentloaded" },
+    );
+    assert.equal(
+      await earlyPage.locator(".miu-env-invite").first().textContent(),
+      "Khách hiện ngay",
+    );
+    assert.equal(
+      await earlyPage.locator("html").getAttribute("data-content-loaded"),
+      null,
+    );
+    releaseContent();
+    await earlyPage.waitForFunction(
+      () => document.documentElement.dataset.contentLoaded === "true",
+    );
+    await earlyContext.close();
     for (const options of [
       { name: "desktop", viewport: { width: 1440, height: 1000 } },
       {
