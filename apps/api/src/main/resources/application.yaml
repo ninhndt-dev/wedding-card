@@ -12,6 +12,10 @@ spring:
     hikari:
       maximum-pool-size: ${DB_POOL_MAX:8}
       minimum-idle: ${DB_POOL_MIN:0}
+      connection-timeout: 5000
+      validation-timeout: 2000
+      idle-timeout: 60000
+      max-lifetime: 300000
       transaction-isolation: TRANSACTION_READ_COMMITTED
   flyway:
     enabled: true

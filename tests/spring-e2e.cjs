@@ -172,6 +172,7 @@ if (
       origin + originalAsset.url + "?preview=480",
     );
     assert.equal(displayImage.status(), 200);
+    assert.equal(displayImage.headers()["vercel-cdn-cache-control"], "public,max-age=31536000,immutable");
     assert.equal(displayImage.headers()["content-type"], "image/jpeg");
     assert.ok(
       (await displayImage.body()).length < largeJpeg.length / 4,

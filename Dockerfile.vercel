@@ -17,6 +17,6 @@ RUN mvn -q -f apps/api/pom.xml package
 FROM eclipse-temurin:25-jre
 WORKDIR /app
 COPY --from=api-build /workspace/apps/api/target/wedding-api-1.0.0-SNAPSHOT.jar /app/api.jar
-ENV PORT=8086 UPLOAD_DIR=/tmp/wedding-uploads MEDIA_MAX_BYTES=4194304 DB_SSL_MODE=REQUIRED DB_POOL_MAX=4 COOKIE_SECURE=true
+ENV PORT=8086 UPLOAD_DIR=/tmp/wedding-uploads MEDIA_MAX_BYTES=4194304 DB_SSL_MODE=REQUIRED DB_POOL_MAX=2 COOKIE_SECURE=true
 EXPOSE 8086
 ENTRYPOINT ["java","-jar","/app/api.jar"]

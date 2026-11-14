@@ -33,7 +33,7 @@ public class ContentController {
   @GetMapping("/api/content")
   public Object content(@RequestParam(required = false) String invite) {
     var row = editor.row(false);
-    var doc = editor.published();
+    var doc = editor.document(row.get("published"));
     var result = new LinkedHashMap<>(Json.map(doc.get("settings")));
     result.put("site", doc.get("site"));
     result.put("editor", row.get("published") == null ? null : doc);

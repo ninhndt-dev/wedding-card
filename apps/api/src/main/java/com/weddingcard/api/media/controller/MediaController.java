@@ -44,6 +44,7 @@ public class MediaController {
       var display = previews.get(filename, preview);
       return ResponseEntity.ok()
           .header("Cache-Control", "public,max-age=31536000,immutable")
+          .header("Vercel-CDN-Cache-Control", "public,max-age=31536000,immutable")
           .contentType(MediaType.parseMediaType(display.mime()))
           .body(new ByteArrayResource(display.content()));
     }
@@ -51,12 +52,14 @@ public class MediaController {
     if (content != null)
       return ResponseEntity.ok()
           .header("Cache-Control", "public,max-age=31536000,immutable")
+          .header("Vercel-CDN-Cache-Control", "public,max-age=31536000,immutable")
           .contentType(MediaType.parseMediaType(mime))
           .body(new ByteArrayResource(content));
     var path = service.directory().resolve(filename);
     if (!Files.isRegularFile(path)) throw new ApiError(404, "Không tìm thấy file.");
     return ResponseEntity.ok()
         .header("Cache-Control", "public,max-age=31536000,immutable")
+        .header("Vercel-CDN-Cache-Control", "public,max-age=31536000,immutable")
         .contentType(MediaType.parseMediaType(mime))
         .body(new FileSystemResource(path));
   }
