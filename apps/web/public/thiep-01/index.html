@@ -2583,8 +2583,6 @@
     var audio = document.getElementById('bgAudio');
     if (!btn || !audio) return;
     var didLoadOnce = false;
-    var loadTries = 0;
-    var lastLoadAt = 0;
     var startAt = 0;
     if (!isFinite(startAt) || startAt < 0) startAt = 0;
     startAt = Math.floor(startAt);
@@ -2592,21 +2590,9 @@
     var ensureStart = function(){
       try {
         if (!audio) return;
-        // Avoid calling audio.load() in a retry loop.
-        // Repeated load() calls can cause the browser to cancel/restart the media request continuously.
-        if (audio.readyState < 1) {
-          // Some browsers (notably Safari) may need a few explicit load() attempts before metadata becomes available.
-          // Cap attempts to avoid spamming canceled requests.
-          try {
-            var now = Date.now();
-            if (audio.load && loadTries < 4 && (now - lastLoadAt) > 800) {
-              loadTries = (loadTries|0) + 1;
-              lastLoadAt = now;
-              audio.load();
-            }
-          } catch(e) {}
-          return;
-        }
+        // play() loads the audio itself. Reloading while metadata is pending
+        // cancels playback on slower connections.
+        if (audio.readyState < 1) return;
         var d = audio.duration;
         var max = (isFinite(d) && d > 0) ? Math.max(0, d - 0.05) : startAt;
         var t = Math.max(0, Math.min(startAt, max));
@@ -2640,8 +2626,6 @@
           try {
             if (!didLoadOnce && audio.readyState < 1 && audio.load) {
               didLoadOnce = true;
-              loadTries = 0;
-              lastLoadAt = 0;
               audio.load();
             }
           } catch(e) {}

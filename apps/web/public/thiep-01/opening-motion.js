@@ -71,6 +71,21 @@
   }
   function play() {
     if (running || cover.dataset.open === "0") return;
+    const audio = document.getElementById("bgAudio");
+    const music = window.weddingMusicConfig;
+    if (
+      !preview &&
+      audio?.getAttribute("src") &&
+      music?.enabled !== false &&
+      music?.autoPlay !== false
+    ) {
+      audio.dataset.openingRequested = "1";
+      if (audio.paused) {
+        const toggle = document.getElementById("audioToggleBtn");
+        if (toggle) toggle.click();
+        else audio.play().catch(() => {});
+      }
+    }
     running = true;
     closed = false;
     willCloseSent = false;

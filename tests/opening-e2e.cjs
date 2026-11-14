@@ -66,6 +66,12 @@ const fs = require("fs");
       const { name, ...contextOptions } = options;
       const context = await browser.newContext(contextOptions);
       const page = await context.newPage();
+      if (name === "mobile") {
+        await page.route("**/audio/*.mp3", async (route) => {
+          await page.waitForTimeout(1300);
+          await route.continue();
+        });
+      }
       const errors = [];
       page.on("pageerror", (e) => errors.push(e.message));
       await page.goto(
@@ -99,6 +105,12 @@ const fs = require("fs");
         window.__motion.started = performance.now();
       });
       await page.locator("#miuOpeningBtn").click();
+      if (name === "mobile") {
+        await page.waitForFunction(() => {
+          const audio = document.getElementById("bgAudio");
+          return !audio.paused && audio.currentTime > 0;
+        });
+      }
       await page.locator("#miuOpening").evaluate((el) => {
         for (let i = 0; i < 5; i++) el.click();
         el.querySelector(".miu-env-nutthiep").dispatchEvent(
