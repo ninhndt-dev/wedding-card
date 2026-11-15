@@ -3,6 +3,12 @@ import { mkdirSync, openSync } from "node:fs";
 import { environment, root } from "./env.mjs";
 import { database } from "./db.mjs";
 import mysql from "mysql2/promise";
+const staticTest = spawnSync(
+  process.execPath,
+  ["--test", "tests/static-assets.test.mjs"],
+  { cwd: root, stdio: "inherit" },
+);
+if (staticTest.status !== 0) process.exit(staticTest.status ?? 1);
 database();
 const env = environment();
 env.DOCKER_HOST ||= "unix://" + env.HOME + "/.colima/default/docker.sock";

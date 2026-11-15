@@ -24,4 +24,16 @@ class InvitationMetadataServiceTest {
     assertTrue(html.contains("https://invite.example/media/12345678-1234-1234-1234-123456789abc.jpg?preview=1440"));
     assertTrue(html.contains("name=\"twitter:image\""));
   }
+
+  @Test void preparedTemplateDoesNotMixRecipientsOrKeepOldPublicationMetadata() {
+    var template = metadata.prepare("<html><head><title>Old</title></head><body>Same invitation</body></html>");
+    var doc = document("");
+    var first = metadata.render(template, doc, "first-guest");
+    var second = metadata.render(template, doc, "second-guest");
+    assertTrue(first.contains("/our-wedding/first-guest"));
+    assertFalse(second.contains("first-guest"));
+    assertTrue(second.contains("/our-wedding/second-guest"));
+    var updated = new HashMap<String,Object>(document("/new-photo.jpg"));
+    assertTrue(metadata.render(template, updated, "second-guest").contains("https://invite.example/new-photo.jpg"));
+  }
 }

@@ -2,6 +2,7 @@ FROM maven:3.9-eclipse-temurin-25 AS api-build
 WORKDIR /workspace
 COPY shared ./shared
 COPY apps/api ./apps/api
+COPY apps/web/public/thiep-01/index.html ./apps/api/src/main/resources/static/thiep-01/index.html
 RUN mvn -q -f apps/api/pom.xml package
 
 FROM eclipse-temurin:25-jre AS api
@@ -20,6 +21,7 @@ COPY apps/web/package.json ./apps/web/package.json
 RUN npm ci
 COPY apps/web ./apps/web
 COPY shared ./shared
+COPY infra/scripts/version-static-assets.mjs ./infra/scripts/version-static-assets.mjs
 RUN npm run build -w @wedding/web
 
 FROM nginx:stable-alpine AS web

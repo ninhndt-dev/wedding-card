@@ -3,6 +3,18 @@
 <html lang="vi" data-miu-os="mac" style="--miu-s: 0.6504347826086957;"><head><meta http-equiv="Content-Security-Policy" content="connect-src 'self'; form-action 'self'; object-src 'none'; base-uri 'self'"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     <link rel="preload" as="image" fetchpriority="high" href="/thiep-01/cover/phongbi.webp"><link rel="preload" as="image" fetchpriority="high" href="/thiep-01/cover/nen.webp"><link rel="preload" as="image" fetchpriority="high" href="/thiep-01/cover/hoa.webp"><link rel="preload" as="image" fetchpriority="high" href="/thiep-01/cover/hoabentrai.webp">
+    <script>
+      window.weddingStaticVersion = "__STATIC_ASSET_VERSION__";
+      window.weddingStaticAsset = function(source) {
+        if (!/^[a-f0-9]{16}$/.test(window.weddingStaticVersion)) return source;
+        try {
+          var url = new URL(source, document.baseURI);
+          if (url.origin !== location.origin || !/^\/(thiep-01|assets|audio|uploads|data)\//.test(url.pathname) || /\.html?$/.test(url.pathname)) return source;
+          url.searchParams.set('v', window.weddingStaticVersion);
+          return url.pathname + url.search + url.hash;
+        } catch (_) { return source; }
+      };
+    </script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       html[data-guest-pending] .miu-env-invite,html[data-guest-pending] [data-node-id="element_text_sk4r8u6s7ly"] { visibility:hidden; }

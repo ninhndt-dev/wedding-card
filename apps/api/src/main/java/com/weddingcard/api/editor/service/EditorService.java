@@ -75,6 +75,11 @@ public class EditorService {
             action.equals("publish") ? serialized : row.get("published"));
     if (action.equals("publish"))
       repo.sql().update("INSERT INTO editor_versions(document) VALUES(?)", serialized);
+    if (action.equals("publish"))
+      org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+          new org.springframework.transaction.support.TransactionSynchronization() {
+            @Override public void afterCommit() { repo.invalidatePublished(); }
+          });
     return repo.state();
   }
 

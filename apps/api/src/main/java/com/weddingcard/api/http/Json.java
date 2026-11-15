@@ -3,12 +3,14 @@ package com.weddingcard.api.http;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.json.JsonMapper;
 
 @Component
 public class Json {
   private final JsonMapper mapper;
+  private final Map<String, Map<String,Object>> resources = new ConcurrentHashMap<>();
 
   public Json(JsonMapper mapper) {
     this.mapper = mapper;
@@ -23,12 +25,34 @@ public class Json {
   }
 
   public Map<String, Object> resource(String name) {
+    return map(copy(resources.computeIfAbsent(name, this::readResource), false));
+  }
+
+  private Map<String,Object> readResource(String name) {
     try (var in = getClass().getResourceAsStream("/shared/" + name)) {
       return map(
           parse(new String(Objects.requireNonNull(in).readAllBytes(), StandardCharsets.UTF_8)));
     } catch (Exception e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  public Map<String,Object> immutable(Map<String,Object> value) {
+    return map(copy(value, true));
+  }
+
+  private Object copy(Object value, boolean immutable) {
+    if (value instanceof Map<?,?> source) {
+      var result = new LinkedHashMap<String,Object>();
+      source.forEach((key, item) -> result.put(key.toString(), copy(item, immutable)));
+      return immutable ? Collections.unmodifiableMap(result) : result;
+    }
+    if (value instanceof List<?> source) {
+      var result = new ArrayList<Object>(source.size());
+      for (var item : source) result.add(copy(item, immutable));
+      return immutable ? Collections.unmodifiableList(result) : result;
+    }
+    return value;
   }
 
   @SuppressWarnings("unchecked")
