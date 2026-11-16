@@ -188,7 +188,14 @@ if (
         "name",
         "side",
       ]);
+      const share = await c.request.get(origin + "/i/" + doc.site.slug + "/" + invite.token, { maxRedirects: 0 });
+      assert.equal(share.status(), 200);
+      const shareHtml = await share.text();
+      assert.ok(shareHtml.includes('property="og:image"'));
+      assert.ok(shareHtml.includes('/i/' + doc.site.slug + '/' + invite.token));
       await p.goto(origin + "/i/" + doc.site.slug + "/" + invite.token);
+      assert.equal(new URL(p.url()).searchParams.get("invite"), invite.token);
+      assert.equal(new URL(p.url()).searchParams.get("guest"), invite.name);
       await p.locator("#miuOpeningBtn").click();
       await p.locator("#miuOpening").waitFor({ state: "hidden" });
       const meal = p.locator('[data-node-id="' + eventId + '"]');

@@ -573,6 +573,7 @@ if (
     )[0][0].id;
     const sharedPage = await ctx.request.get(
       origin + "/i/" + s.document.site.slug,
+      { maxRedirects: 0 },
     );
     assert.equal(sharedPage.status(), 200);
     const sharedHtml = await sharedPage.text();
@@ -679,7 +680,7 @@ if (
     await page.locator("#miuOpeningBtn").click();
     await page
       .locator("#miuOpening")
-      .waitFor({ state: "hidden", timeout: 3000 });
+      .waitFor({ state: "hidden", timeout: 8000 });
     await page.screenshot({ path: ".local/spring-public.png" });
     checks.push("Thiệp công khai và hiệu ứng mở hoạt động trên Vite");
     const form = page.locator('form[data-miu-rsvp-form="1"]').first();

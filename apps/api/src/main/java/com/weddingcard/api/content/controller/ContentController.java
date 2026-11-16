@@ -15,13 +15,15 @@ public class ContentController {
   private final Sql sql;
   private final String secret;
   private final InvitationService invitations;
+  private final InvitationPageController pages;
 
   public ContentController(
-      EditorRepository editor, Sql sql, InvitationService invitations, @Value("${app.session-secret}") String secret) {
+      EditorRepository editor, Sql sql, InvitationService invitations, InvitationPageController pages, @Value("${app.session-secret}") String secret) {
     this.editor = editor;
     this.sql = sql;
     this.secret = secret;
     this.invitations = invitations;
+    this.pages = pages;
   }
 
   @GetMapping("/api/health")
@@ -47,27 +49,18 @@ public class ContentController {
 
   @GetMapping("/i/{slug}")
   public Object invitation(
-      @PathVariable String slug, @RequestParam(required = false) String guest) {
+      @PathVariable String slug, @RequestParam(required = false) String guest) throws Exception {
     if (!slug.equals(Json.map(editor.published().get("site")).get("slug")))
       throw new ApiError(404, "Không tìm thấy thiệp.");
-    String location =
-        "/thiep-01/index.html"
-            + (guest == null
-                ? ""
-                : "?guest="
-                    + java.net.URLEncoder.encode(guest, java.nio.charset.StandardCharsets.UTF_8));
-    return ResponseEntity.status(307).header("Location", location).build();
+    return pages.invitation(null, guest);
   }
 
   @GetMapping("/i/{slug}/{token}")
-  public Object personalInvitation(@PathVariable String slug, @PathVariable String token) {
+  public Object personalInvitation(@PathVariable String slug, @PathVariable String token) throws Exception {
     if (!slug.equals(Json.map(editor.published().get("site")).get("slug")))
       throw new ApiError(404, "Không tìm thấy thiệp.");
     String name = (String) invitations.byToken(token).get("name");
-    return ResponseEntity.status(307)
-        .header("Location", "/thiep-01/index.html?invite=" + token + "&guest="
-            + java.net.URLEncoder.encode(name, java.nio.charset.StandardCharsets.UTF_8))
-        .build();
+    return pages.invitation(token, name);
   }
 
   @GetMapping("/api/invitation/{token}")
