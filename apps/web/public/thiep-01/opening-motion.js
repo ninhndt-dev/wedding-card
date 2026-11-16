@@ -46,7 +46,9 @@
       if (!Number.isFinite(top) || top >= 935) continue;
       const copy = node.cloneNode(true);
       for (const image of copy.querySelectorAll("img[data-template-src]")) {
-        image.src = new URL(image.dataset.templateSrc, document.baseURI).href;
+        if (!image.getAttribute("src")) {
+          image.src = new URL(image.dataset.templateSrc, document.baseURI).href;
+        }
         image.loading = "eager";
       }
       miniature.append(copy);
