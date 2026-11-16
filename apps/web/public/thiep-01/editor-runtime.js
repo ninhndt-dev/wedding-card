@@ -44,7 +44,7 @@
     const size=(fit==='cover'?wider:!wider)?'auto 100%':(backgrounds.length*100)+'% auto';
     for(const background of backgrounds)background.el.style.backgroundSize=size;
    }
-  };image.src=displaySource(source,1440);
+  };image.src=displaySource(source,480);
  }
  if(value.hidden)el.style.setProperty('display','none','important');}
  function render(doc){if(!doc)return;active=doc;
