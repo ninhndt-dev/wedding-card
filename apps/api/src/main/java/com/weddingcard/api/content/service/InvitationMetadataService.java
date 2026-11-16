@@ -37,12 +37,13 @@ public class InvitationMetadataService {
     var current = details;
     if (current != null && current.document() == doc) return current;
     var settings = map(doc.get("settings"));
-    String title = "Thiệp cưới - " + settings.get("groom") + " & " + settings.get("bride");
-    String description = "Trân trọng kính mời tới dự lễ cưới của " + settings.get("groom") + " & " + settings.get("bride") + ".";
+    String title = (settings.get("groom") + " & " + settings.get("bride") + " WEDDING").toUpperCase(Locale.forLanguageTag("vi"));
+    String description = "Trân trọng kính mời Quý Khách đến dự và chung vui cùng gia đình chúng tôi!";
     String canonical = origin + "/i/" + map(doc.get("site")).get("slug");
-    String photo = Objects.toString(settings.get("photo"), "").trim();
-    if (photo.isEmpty() && doc.get("album") instanceof List<?> album && !album.isEmpty())
-      photo = Objects.toString(map(album.getFirst()).get("src"), "");
+    String photo = "";
+    if (doc.get("album") instanceof List<?> album && !album.isEmpty())
+      photo = Objects.toString(map(album.getFirst()).get("src"), "").trim();
+    if (photo.isEmpty()) photo = Objects.toString(settings.get("photo"), "").trim();
     if (photo.isEmpty()) photo = "/thiep-01/1793892037600-HIU_7932.webp";
     if (photo.matches("/media/[a-f0-9-]{36}\\.(jpg|png)")) photo += "?preview=1440";
     if (photo.startsWith("./")) photo = "/thiep-01/" + photo.substring(2);
