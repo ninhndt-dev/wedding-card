@@ -98,6 +98,7 @@ try {
   ]);
   for (const file of [
     "tests/spring-e2e.cjs",
+    "tests/auto-scroll-e2e.cjs",
     "tests/opening-e2e.cjs",
     "tests/reveal-e2e.cjs",
     "tests/photo-viewer-e2e.cjs",
