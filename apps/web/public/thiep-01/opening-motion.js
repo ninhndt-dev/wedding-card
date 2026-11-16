@@ -16,6 +16,8 @@
     willCloseSent = false,
     timer = null,
     leadTimer = null,
+    zoomTimer = null,
+    zoomCard = null,
     animations = [];
   const event = (name) =>
     window.dispatchEvent(new Event("miu:opening:" + name));
@@ -38,6 +40,7 @@
     running = false;
     clearTimeout(timer);
     clearTimeout(leadTimer);
+    clearTimeout(zoomTimer);
     reveal();
     cover.style.display = "none";
     cover.dataset.open = "0";
@@ -50,6 +53,10 @@
     body.style.overflow = "";
     for (const animation of animations) animation.cancel();
     animations = [];
+    zoomCard?.remove();
+    zoomCard = null;
+    const letter = stage.querySelector(".card-side.left .miu-env-letter");
+    if (letter) letter.style.visibility = "";
     buttons.forEach((b) => {
       b.disabled = false;
       b.setAttribute("aria-expanded", "true");
@@ -68,6 +75,45 @@
     const animation = el.animate(frames, { fill: "both", ...options });
     animations.push(animation);
     return animation.finished.catch(() => {});
+  }
+  function zoomInvitation(letter) {
+    if (!letter || closed) return;
+    const from = letter.getBoundingClientRect();
+    const main = document.querySelector(".miu-stage")?.getBoundingClientRect();
+    const hero = document.querySelector('.miu-canvas [data-node-id="element_image_az87tzsrjz9"]')?.getBoundingClientRect();
+    const target = {
+      left: hero?.left ?? main?.left ?? 0,
+      top: hero?.top ?? 0,
+      width: hero?.width ?? main?.width ?? innerWidth,
+      height: hero?.height ?? innerHeight,
+    };
+    zoomCard = document.createElement("div");
+    zoomCard.className = "miu-opening-zoom-card";
+    zoomCard.setAttribute("aria-hidden", "true");
+    zoomCard.append(letter.querySelector("img").cloneNode(true));
+    const caption = document.createElement("span");
+    caption.textContent = "Save the date";
+    zoomCard.append(caption);
+    Object.assign(zoomCard.style, {
+      left: from.left + "px",
+      top: from.top + "px",
+      width: from.width + "px",
+      height: from.height + "px",
+    });
+    body.append(zoomCard);
+    letter.style.visibility = "hidden";
+    animate(zoomCard, [
+      { left: from.left + "px", top: from.top + "px", width: from.width + "px", height: from.height + "px", borderWidth: "3px" },
+      { left: target.left + "px", top: target.top + "px", width: target.width + "px", height: target.height + "px", borderWidth: "0px" },
+    ], { duration: 1100, easing: "cubic-bezier(.2,.7,.2,1)" });
+    animate(zoomCard, [{ opacity: 1 }, { opacity: 1, offset: .7 }, { opacity: 0 }], {
+      duration: 1100,
+      easing: "linear",
+    });
+    animate(caption, [{ opacity: 1 }, { opacity: 0 }], {
+      duration: 350,
+      easing: "ease-out",
+    });
   }
   function play() {
     if (running || cover.dataset.open === "0") return;
@@ -162,13 +208,13 @@
         easing: "cubic-bezier(.2,.7,.2,1)",
       }),
       animate(stage, [{ opacity: 1 }, { opacity: 0 }], {
-        duration: 850,
-        delay: 2260,
+        duration: 900,
+        delay: 2200,
         easing: "ease-in-out",
       }),
       animate(cover, [{ opacity: 1 }, { opacity: 0 }], {
-        duration: 850,
-        delay: 2280,
+        duration: 600,
+        delay: 2750,
         easing: "ease-in-out",
       }),
     ];
@@ -176,8 +222,9 @@
       duration: 180,
       easing: "ease-out",
     });
-    leadTimer = setTimeout(reveal, 2280);
-    timer = setTimeout(finish, 3200);
+    zoomTimer = setTimeout(() => zoomInvitation(letter), 2180);
+    leadTimer = setTimeout(reveal, 2750);
+    timer = setTimeout(finish, 3450);
     Promise.all(work).then(finish);
   }
   cover.addEventListener("click", () => {

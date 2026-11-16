@@ -4,6 +4,9 @@ html{scrollbar-gutter:stable}
 #miuOpeningSides.default .card-side.left,#miuOpeningSides.default .card-side.right{animation:none!important;will-change:auto;backface-visibility:hidden}
 #miuOpening[data-motion="opening"]{will-change:opacity}#miuOpening[data-motion="opening"] #miuOpeningSides{will-change:translate,scale,opacity}
 #miuOpening[data-motion="opening"]{pointer-events:none}
+.miu-opening-zoom-card{position:fixed;z-index:12002;overflow:hidden;box-sizing:border-box;border:3px solid #fffaf3;background:#f6f1e8;box-shadow:0 12px 32px rgba(80,59,42,.22);pointer-events:none}
+.miu-opening-zoom-card img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 67%}
+.miu-opening-zoom-card span{position:absolute;inset:auto 0 0;padding:20% 4% 7%;background:linear-gradient(transparent,rgba(0,0,0,.52));color:#fffaf3;text-align:center;font:italic 17px "Cormorant Garamond",Georgia,serif;letter-spacing:.06em}
 #miuOpeningSides .miu-env-nutthiep{animation:openingSealBreathe 2200ms cubic-bezier(.45,0,.55,1) infinite;backface-visibility:hidden}
 #miuOpeningSides .miu-env-click-btn{animation:openingHintBreathe 2400ms cubic-bezier(.45,0,.55,1) infinite;backface-visibility:hidden}
 #miuOpening[data-motion="opening"] .miu-env-nutthiep,#miuOpening[data-motion="opening"] .miu-env-click-btn{animation:none!important}
