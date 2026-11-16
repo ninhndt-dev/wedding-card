@@ -32,6 +32,27 @@
     const main = document.querySelector(".miu-stage");
     const width = Math.min(main?.clientWidth || 575, innerWidth);
     stage.style.setProperty("--miu-opening-w", Math.round(width) + "px");
+    prepareInvitation();
+  }
+  function prepareInvitation() {
+    const letter = stage.querySelector(".card-side.left .miu-env-letter");
+    const source = document.querySelector(".miu-canvas");
+    const holder = letter?.querySelector(".miu-invitation-preview");
+    if (!letter || !source || !holder) return;
+    const miniature = document.createElement("div");
+    miniature.className = "miu-invitation-preview-canvas";
+    for (const node of source.children) {
+      const top = parseFloat(node.style.top);
+      if (!Number.isFinite(top) || top >= 935) continue;
+      const copy = node.cloneNode(true);
+      for (const image of copy.querySelectorAll("img[data-template-src]")) {
+        image.src = new URL(image.dataset.templateSrc, document.baseURI).href;
+        image.loading = "eager";
+      }
+      miniature.append(copy);
+    }
+    miniature.style.transform = `scale(${letter.clientWidth / 575})`;
+    holder.replaceChildren(miniature);
   }
   function finish() {
     if (closed) return;
@@ -79,44 +100,41 @@
   function zoomInvitation(letter) {
     if (!letter || closed) return;
     const from = letter.getBoundingClientRect();
-    const main = document.querySelector(".miu-stage")?.getBoundingClientRect();
-    const hero = document.querySelector('.miu-canvas [data-node-id="element_image_az87tzsrjz9"]')?.getBoundingClientRect();
+    const main = document.querySelector(".miu-canvas")?.getBoundingClientRect();
     const target = {
-      left: hero?.left ?? main?.left ?? 0,
-      top: hero?.top ?? 0,
-      width: hero?.width ?? main?.width ?? innerWidth,
-      height: hero?.height ?? innerHeight,
+      left: main?.left ?? 0,
+      top: main?.top ?? 0,
+      width: main?.width ?? innerWidth,
+      height: (main?.width ?? innerWidth) * 935 / 575,
     };
+    const scale = from.width / target.width;
     zoomCard = document.createElement("div");
     zoomCard.className = "miu-opening-zoom-card";
     zoomCard.setAttribute("aria-hidden", "true");
-    zoomCard.append(letter.querySelector("img").cloneNode(true));
-    const caption = document.createElement("span");
-    caption.textContent = "Save the date";
-    zoomCard.append(caption);
+    const miniature = letter.querySelector(".miu-invitation-preview-canvas")?.cloneNode(true);
+    if (!miniature) return;
+    miniature.style.transform = `scale(${target.width / 575})`;
+    zoomCard.append(miniature);
     Object.assign(zoomCard.style, {
-      left: from.left + "px",
-      top: from.top + "px",
-      width: from.width + "px",
-      height: from.height + "px",
+      left: target.left + "px",
+      top: target.top + "px",
+      width: target.width + "px",
+      height: target.height + "px",
     });
     body.append(zoomCard);
     letter.style.visibility = "hidden";
     animate(zoomCard, [
-      { left: from.left + "px", top: from.top + "px", width: from.width + "px", height: from.height + "px", borderWidth: "3px" },
-      { left: target.left + "px", top: target.top + "px", width: target.width + "px", height: target.height + "px", borderWidth: "0px" },
-    ], { duration: 1100, easing: "cubic-bezier(.2,.7,.2,1)" });
-    animate(zoomCard, [{ opacity: 1 }, { opacity: 1, offset: .7 }, { opacity: 0 }], {
-      duration: 1100,
+      { transform: `translate(${from.left - target.left}px, ${from.top - target.top}px) scale(${scale})` },
+      { transform: "translate(0, 0) scale(1)" },
+    ], { duration: 900, easing: "cubic-bezier(.2,.7,.2,1)" });
+    animate(zoomCard, [{ opacity: 1 }, { opacity: 1, offset: .75 }, { opacity: 0 }], {
+      duration: 1200,
       easing: "linear",
-    });
-    animate(caption, [{ opacity: 1 }, { opacity: 0 }], {
-      duration: 350,
-      easing: "ease-out",
     });
   }
   function play() {
     if (running || cover.dataset.open === "0") return;
+    prepareInvitation();
     const audio = document.getElementById("bgAudio");
     const music = window.weddingMusicConfig;
     if (
@@ -213,8 +231,8 @@
         easing: "ease-in-out",
       }),
       animate(cover, [{ opacity: 1 }, { opacity: 0 }], {
-        duration: 600,
-        delay: 2750,
+        duration: 450,
+        delay: 3000,
         easing: "ease-in-out",
       }),
     ];
@@ -223,8 +241,8 @@
       easing: "ease-out",
     });
     zoomTimer = setTimeout(() => zoomInvitation(letter), 2180);
-    leadTimer = setTimeout(reveal, 2750);
-    timer = setTimeout(finish, 3450);
+    leadTimer = setTimeout(reveal, 3000);
+    timer = setTimeout(finish, 3550);
     Promise.all(work).then(finish);
   }
   cover.addEventListener("click", () => {
