@@ -173,7 +173,7 @@ if (
     );
     assert.equal(displayImage.status(), 200);
     assert.equal(
-      displayImage.headers()["vercel-cdn-cache-control"],
+      displayImage.headers()["cache-control"],
       "public,max-age=31536000,immutable",
     );
     assert.equal(displayImage.headers()["content-type"], "image/jpeg");

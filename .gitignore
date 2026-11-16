@@ -7,7 +7,6 @@ data/*
 *.log
 
 .local/
-.vercel/
 
 # Local tooling, unused hosting metadata and captured reference pages
 .DS_Store

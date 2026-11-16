@@ -74,7 +74,7 @@ Nếu đặt **Số người được mời** lớn hơn 0 cho một thiệp, bi
 
 ## Kiểm tra
 
-Editor local và Docker Compose giữ nguyên file ảnh tải lên, không nén hoặc giảm kích thước; hỗ trợ ảnh tối đa 32 MiB. Giới hạn upload trên Vercel vẫn là 4 MiB theo cấu hình container bên dưới.
+Editor local và Docker Compose giữ nguyên file ảnh tải lên, không nén hoặc giảm kích thước; hỗ trợ ảnh tối đa 32 MiB.
 
 ```sh
 npx playwright install chromium
@@ -99,22 +99,16 @@ Importer xác minh checksum, chạy transaction, giữ ID, kiểm tra database �
 
 ## Production
 
-### Vercel (một container, gói miễn phí)
-
-`Dockerfile.vercel` đóng frontend Vite và Spring Boot vào cùng một container. Vercel chạy container theo request; không dùng volume bền vững. Ảnh tải lên qua editor được lưu trong cột `media_assets.content` của MySQL (Flyway V3). Ảnh mẫu vẫn được đóng trong frontend. Đây là lựa chọn cho thiệp cá nhân ít lượt xem; tổng ảnh upload và dữ liệu phải nằm trong giới hạn của MySQL Free.
-
-Cần một MySQL 8 online hỗ trợ TLS, ví dụ Aiven MySQL Free (1 GB). Tạo database trước, sao lưu và nhập dữ liệu `wedding_card` hiện tại nếu muốn giữ nội dung/khách mời/phản hồi. Không dùng `.env.local` làm cấu hình production. Trong Vercel, đặt riêng các biến `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `APP_ORIGIN`, `ADMIN_PASSWORD`, `SESSION_SECRET`. `APP_ORIGIN` là URL HTTPS production chính xác; `SESSION_SECRET` tối thiểu 32 ký tự. Container đã đặt `COOKIE_SECURE=true`, `DB_SSL_MODE=REQUIRED` (TLS bắt buộc theo ví dụ JDBC của Aiven), giới hạn upload 4 MiB và pool MySQL tối đa bốn kết nối mỗi instance. Nếu dùng `VERIFY_IDENTITY`, cần cấu hình thêm CA của Aiven vào Java truststore. Không đưa mật khẩu vào Git hay chat.
-
-Sau khi deploy, kiểm tra `/api/health`, `/thiep-01/index.html`, `/admin`, một link `/i/{slug}/{token}`, RSVP và ảnh upload. Ảnh lớn hơn 4 MiB không upload được trên Vercel. Gói Hobby có hạn mức; khi chạm hạn mức dịch vụ có thể ngừng phục vụ đến chu kỳ tiếp theo, không tự chuyển sang gói trả phí. Không bật Pro hoặc tài nguyên trả phí nếu cần giữ chi phí bằng 0.
-
 ### Docker Compose
+
+Push lên nhánh `main` sẽ kích hoạt `.github/workflows/deploy-production.yml` để build và deploy lên VPS. VPS chạy Caddy, nginx, Spring Boot và MySQL bằng Docker Compose; cấu hình production đặt trong `.env.production` trên VPS.
 
 `npm run build` tạo frontend `apps/web/dist` và JAR `apps/api/target/wedding-api-1.0.0-SNAPSHOT.jar`. Có thể chạy JAR qua `node infra/scripts/api.mjs --jar`, phục vụ frontend bằng nginx, proxy `/api`, `/media`, `/i/` tới Spring.
 
 Hoặc dùng file Compose production (Docker Compose V2):
 
 ```sh
-docker compose --env-file .env.local -f infra/compose.yaml -f infra/compose.production.yaml up -d --build
+docker compose --env-file .env.production -f infra/compose.yaml -f infra/compose.production.yaml up -d --build
 ```
 
 Đặt `APP_ORIGIN` thành URL HTTPS thật và `COOKIE_SECURE=true` khi đặt sau HTTPS reverse proxy. Thư mục upload và MySQL dùng volume bền vững; sao lưu cả hai. Bật TLS cho kết nối MySQL từ xa. Không đưa `.env`, export hoặc dữ liệu khách mời lên Git. Giới hạn đăng nhập hiện nằm trong bộ nhớ một API instance; triển khai nhiều instance cần rate limit chung tại proxy.
@@ -127,4 +121,4 @@ File tải để import chỉ gồm hai cột, các thông tin khác bổ sung s
 
 Ảnh trong **Settings → Ảnh đại diện khi chia sẻ link** được dùng cho Open Graph/Twitter trong HTML trả trực tiếp từ server. Bấm **Áp dụng** để cập nhật; nếu chưa chọn ảnh thì dùng ảnh đầu album. Link khách riêng giữ đúng metadata khi chuyển tới trang thiệp.
 
-Bản build frontend tạo `static-asset-manifest.json` và URL tài nguyên có hash. Trên Vercel, chỉ tài nguyên tĩnh có hash khớp bản build được cache lâu; HTML, dữ liệu khách và API quản trị giữ `no-store`. Template metadata được chuẩn bị một lần. Document công khai đã parse được tái sử dụng, nhưng mỗi request vẫn đối chiếu giá trị đang lưu trong DB để nhận ngay thay đổi từ instance khác.
+Bản build frontend tạo `static-asset-manifest.json` và URL tài nguyên có hash. Chỉ tài nguyên tĩnh có hash khớp bản build được cache lâu; HTML, dữ liệu khách và API quản trị giữ `no-store`. Template metadata được chuẩn bị một lần. Document công khai đã parse được tái sử dụng, nhưng mỗi request vẫn đối chiếu giá trị đang lưu trong DB để nhận ngay thay đổi từ instance khác.

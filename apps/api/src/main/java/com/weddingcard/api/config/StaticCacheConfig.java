@@ -45,7 +45,6 @@ public class StaticCacheConfig implements WebMvcConfigurer {
           || !paths.contains(path) || path.endsWith(".html")
           || path.startsWith("/api/") || path.startsWith("/media/")) return true;
       response.setHeader("Cache-Control", "public,max-age=31536000,immutable");
-      response.setHeader("Vercel-CDN-Cache-Control", "public,max-age=31536000,immutable");
       return true;
     }
   }

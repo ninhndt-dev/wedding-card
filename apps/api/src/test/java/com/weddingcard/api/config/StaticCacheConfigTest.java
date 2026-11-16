@@ -17,7 +17,6 @@ class StaticCacheConfigTest {
     var response = new MockHttpServletResponse();
     headers.preHandle(request, response, new ResourceHttpRequestHandler());
     assertEquals("public,max-age=31536000,immutable", response.getHeader("Cache-Control"));
-    assertEquals("public,max-age=31536000,immutable", response.getHeader("Vercel-CDN-Cache-Control"));
   }
 
   @Test void neverCachesHtmlApiOrUnknownAssetVersions() throws Exception {
