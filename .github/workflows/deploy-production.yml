@@ -1,0 +1,54 @@
+name: Deploy production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wedding-card-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build -w @wedding/web
+      - name: Configure deploy key
+        env:
+          DEPLOY_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+        run: |
+          test -n "$DEPLOY_KEY"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/wedding_deploy
+          chmod 600 ~/.ssh/wedding_deploy
+      - name: Upload source
+        run: |
+          rsync -az --delete \
+            --exclude='/.git/' \
+            --exclude='/.github/' \
+            --exclude='**/node_modules/' \
+            --exclude='**/dist/' \
+            --exclude='**/target/' \
+            --exclude='/.local/' \
+            --exclude='**/.env*' \
+            --exclude='/caddy/' \
+            --exclude='/data/' \
+            -e "ssh -i $HOME/.ssh/wedding_deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$GITHUB_WORKSPACE/.github/known_hosts" \
+            ./ root@103.151.52.69:/opt/wedding-card/
+      - name: Build and restart on VPS
+        run: |
+          ssh -i "$HOME/.ssh/wedding_deploy" -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes -o UserKnownHostsFile=.github/known_hosts \
+            root@103.151.52.69 'bash /opt/wedding-card/infra/scripts/deploy-production.sh'

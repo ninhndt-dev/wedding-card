@@ -1,0 +1,9 @@
+ninhngoc-wedding.io.vn {
+  encode zstd gzip
+  redir /thiep-01/index.html /?{query} 308
+  reverse_proxy 127.0.0.1:3100
+}
+
+www.ninhngoc-wedding.io.vn {
+  redir https://ninhngoc-wedding.io.vn{uri} permanent
+}
