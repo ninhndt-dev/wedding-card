@@ -152,19 +152,23 @@
         [{ transform: "rotateX(0deg)" }, { transform: "rotateX(168deg)" }],
         { duration: 650, delay: 980, easing: "cubic-bezier(.25,.8,.25,1)" },
       ),
-      animate(letter, [{ translate: "0 12px" }, { translate: "0 -38px" }], {
-        duration: 500,
-        delay: 1130,
-        easing: "cubic-bezier(.22,.61,.36,1)",
+      animate(flap, [{ zIndex: 3 }, { zIndex: 0 }], {
+        duration: 1,
+        delay: 1630,
+      }),
+      animate(letter, [{ translate: "0 0", scale: "1" }, { translate: "0 -68%", scale: "1.06" }], {
+        duration: 900,
+        delay: 1390,
+        easing: "cubic-bezier(.2,.7,.2,1)",
       }),
       animate(stage, [{ opacity: 1 }, { opacity: 0 }], {
-        duration: 800,
-        delay: 1580,
+        duration: 850,
+        delay: 2260,
         easing: "ease-in-out",
       }),
       animate(cover, [{ opacity: 1 }, { opacity: 0 }], {
         duration: 850,
-        delay: 1600,
+        delay: 2280,
         easing: "ease-in-out",
       }),
     ];
@@ -172,8 +176,8 @@
       duration: 180,
       easing: "ease-out",
     });
-    leadTimer = setTimeout(reveal, 1600);
-    timer = setTimeout(finish, 2600);
+    leadTimer = setTimeout(reveal, 2280);
+    timer = setTimeout(finish, 3200);
     Promise.all(work).then(finish);
   }
   cover.addEventListener("click", () => {
