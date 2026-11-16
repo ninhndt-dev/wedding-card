@@ -11,13 +11,13 @@ class InvitationMetadataServiceTest {
         "settings", Map.of("groom", "Ninh <&", "bride", "Ngọc", "photo", photo),
         "album", List.of(Map.of("src", "/media/12345678-1234-1234-1234-123456789abc.jpg")));
   }
-  @Test void usesFirstAlbumPhotoAndEscapesMetadata() {
+  @Test void usesConfiguredSharePhotoAndEscapesMetadata() {
     var html = metadata.render("<html><head><title>Old</title><meta property=\"og:image\" content=\"https://old.example/a.jpg\"><meta property=\"og:image:width\" content=\"1200\"></head></html>", document("/media/87654321-1234-1234-1234-123456789abc.jpg"), "test-token");
-    assertTrue(html.contains("https://invite.example/media/12345678-1234-1234-1234-123456789abc.jpg?preview=1440"));
+    assertTrue(html.contains("https://invite.example/media/87654321-1234-1234-1234-123456789abc.jpg?preview=1440"));
     assertTrue(html.contains("https://invite.example/i/our-wedding/test-token"));
     assertTrue(html.contains("NINH &lt;&amp; &amp; NGỌC WEDDING"));
     assertTrue(html.contains("Trân trọng kính mời Quý Khách đến dự và chung vui cùng gia đình chúng tôi!"));
-    assertFalse(html.contains("87654321-1234-1234-1234-123456789abc"));
+    assertFalse(html.contains("12345678-1234-1234-1234-123456789abc"));
     assertFalse(html.contains("old.example"));
     assertFalse(html.contains("og:image:width"));
   }
@@ -37,7 +37,7 @@ class InvitationMetadataServiceTest {
     assertTrue(second.contains("/our-wedding/second-guest"));
     var updated = new HashMap<String,Object>(document("/new-photo.jpg"));
     updated.put("album", List.of(Map.of("src", "/new-album-photo.jpg")));
-    assertTrue(metadata.render(template, updated, "second-guest").contains("https://invite.example/new-album-photo.jpg"));
+    assertTrue(metadata.render(template, updated, "second-guest").contains("https://invite.example/new-photo.jpg"));
   }
   @Test void fallsBackToConfiguredPhotoWhenAlbumIsEmpty() {
     var doc = new HashMap<String,Object>(document("/fallback.jpg"));
