@@ -24,7 +24,7 @@ COPY shared ./shared
 COPY infra/scripts/version-static-assets.mjs ./infra/scripts/version-static-assets.mjs
 RUN npm run build -w @wedding/web
 
-FROM nginx:stable-alpine AS web
+FROM nginx:1.30.7-alpine AS web
 COPY infra/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=web-build /workspace/apps/web/dist /usr/share/nginx/html
 EXPOSE 80
