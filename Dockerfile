@@ -9,7 +9,7 @@ FROM eclipse-temurin:25-jre AS api
 WORKDIR /app
 RUN mkdir -p /app/uploads && chown -R 10001:10001 /app
 COPY --from=api-build /workspace/apps/api/target/wedding-api-1.0.0-SNAPSHOT.jar /app/api.jar
-ENV UPLOAD_DIR=/app/uploads API_PORT=8086
+ENV UPLOAD_DIR=/app/uploads API_PORT=8086 JAVA_TOOL_OPTIONS=-XX:-UseBASE64Intrinsics
 USER 10001:10001
 EXPOSE 8086
 ENTRYPOINT ["java","-jar","/app/api.jar"]
